@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Checklist operativa opzioni</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f1f5f9;color:#111;padding:16px;min-height:100vh}
+h1{font-size:17px;font-weight:700;margin-bottom:4px;color:#111}
+.subtitle{font-size:12px;color:#6b7280;margin-bottom:16px}
+
+/* PHASE HEADERS */
+.phase{border-radius:10px;padding:10px 14px;margin-bottom:10px;cursor:pointer;user-select:none}
+.phase-header{display:flex;align-items:center;justify-content:space-between}
+.phase-title{font-size:13px;font-weight:700;letter-spacing:.02em}
+.phase-score{font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px}
+.phase-body{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:500px){.phase-body{grid-template-columns:1fr}}
+.phase-toggle{font-size:11px;color:inherit;opacity:.7}
+
+/* PHASE COLORS */
+.ph-1{background:#E1F5EE;border:1px solid #5DCAA5}
+.ph-1 .phase-title{color:#085041}
+.ph-1 .phase-score{background:#085041;color:#E1F5EE}
+.ph-2{background:#FAEEDA;border:1px solid #EF9F27}
+.ph-2 .phase-title{color:#633806}
+.ph-2 .phase-score{background:#633806;color:#FAEEDA}
+.ph-3{background:#EEEDFE;border:1px solid #7F77DD}
+.ph-3 .phase-title{color:#26215C}
+.ph-3 .phase-score{background:#26215C;color:#EEEDFE}
+.ph-4{background:#EAF3DE;border:1px solid #97C459}
+.ph-4 .phase-title{color:#173404}
+.ph-4 .phase-score{background:#173404;color:#EAF3DE}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px}
+.card-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+
+/* CHECK ITEMS */
+.check-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f8fafc;cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-item:hover{background:#f8fafc;border-radius:5px;padding-left:4px}
+.check-box{width:16px;height:16px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.check-box.checked{background:#059669;border-color:#059669}
+.check-box.checked::after{content:'✓';font-size:10px;color:#fff;font-weight:700}
+.check-box.critical{border-color:#dc2626}
+.check-box.critical.checked{background:#dc2626;border-color:#dc2626}
+.check-label{font-size:12px;color:#374151;line-height:1.4}
+.check-label .tag{font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px}
+.tag-critical{background:#fee2e2;color:#991b1b}
+.tag-warn{background:#fef3c7;color:#92400e}
+
+/* INPUT FIELDS */
+.check-input-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f8fafc}
+.check-input-row:last-child{border-bottom:none}
+.check-input-row label{font-size:12px;color:#374151;flex:1}
+.check-input-row input{font-size:12px;padding:3px 6px;border:1px solid #e2e8f0;border-radius:5px;width:80px;text-align:right;color:#111;background:#fff}
+.check-input-row input:focus{outline:none;border-color:#3b82f6}
+
+/* SEMAFORO */
+.semaforo{border-radius:12px;padding:16px;margin-top:16px;transition:.3s}
+.sem-verde{background:#f0fdf4;border:2px solid #22c55e}
+.sem-giallo{background:#fefce8;border:2px solid #f59e0b}
+.sem-rosso{background:#fff1f2;border:2px solid #f43f5e}
+.sem-grigio{background:#f8fafc;border:2px solid #e2e8f0}
+.sem-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.sem-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0}
+.dot-verde{background:#22c55e}
+.dot-giallo{background:#f59e0b}
+.dot-rosso{background:#f43f5e}
+.dot-grigio{background:#d1d5db}
+.sem-title{font-size:15px;font-weight:700}
+.sem-verde .sem-title{color:#14532d}
+.sem-giallo .sem-title{color:#78350f}
+.sem-rosso .sem-title{color:#881337}
+.sem-grigio .sem-title{color:#6b7280}
+.sem-msg{font-size:13px;line-height:1.6;margin-bottom:10px}
+.sem-verde .sem-msg{color:#166534}
+.sem-giallo .sem-msg{color:#92400e}
+.sem-rosso .sem-msg{color:#9f1239}
+.sem-grigio .sem-msg{color:#6b7280}
+.sem-blockers{font-size:12px;margin-top:6px}
+.blocker-item{display:flex;align-items:center;gap:6px;padding:3px 0;color:#991b1b}
+.blocker-item::before{content:'✗';font-weight:700;color:#dc2626}
+.warn-item{display:flex;align-items:center;gap:6px;padding:3px 0;color:#92400e}
+.warn-item::before{content:'!';font-weight:700;color:#d97706;width:12px;text-align:center}
+
+/* SCORE BAR */
+.score-section{margin-top:10px}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.score-label{font-size:11px;color:#6b7280;min-width:120px}
+.score-bar{flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;transition:width .4s}
+.score-pct{font-size:11px;font-weight:700;min-width:32px;text-align:right}
+
+/* RESET */
+.btn-reset{display:block;width:100%;margin-top:12px;padding:8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:600;color:#6b7280;cursor:pointer;text-align:center;transition:.15s}
+.btn-reset:hover{background:#e2e8f0;color:#374151}
+
+/* PROGRESS TOP */
+.top-progress{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.top-score-num{font-size:22px;font-weight:700;color:#111;min-width:48px}
+.top-score-label{font-size:11px;color:#6b7280}
+.top-bar{flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.top-fill{height:100%;border-radius:4px;transition:width .4s,background .4s}
+</style>
+</head>
+<body>
+
+<h1>Checklist operativa opzioni</h1>
+<p class="subtitle">Spunta ogni voce — il sistema valuta lo stato di salute del trade in tempo reale</p>
+
+<!-- PROGRESS GLOBALE -->
+<div class="top-progress">
+  <div>
+    <div class="top-score-num" id="global-score">0%</div>
+    <div class="top-score-label">completamento</div>
+  </div>
+  <div style="flex:1">
+    <div class="top-bar"><div class="top-fill" id="global-bar" style="width:0%;background:#d1d5db"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:3px;font-size:10px;color:#9ca3af">
+      <span>0%</span><span>50%</span><span>100%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ -->
+<!-- FASE 1 — PRIMA DI APRIRE -->
+<!-- ══════════════════════════ -->
+<div class="phase ph-1" id="ph1">
+  <div class="phase-header" onclick="togglePhase('ph1-body')">
+    <div class="phase-title">1 — Prima di aprire (filtri di ingresso)</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="phase-score" id="score-ph1">0/0</div>
+      <span class="phase-toggle" id="tog-ph1-body">▲</span>
+    </div>
+  </div>
+  <div class="phase-body" id="ph1-body">
+
+    <!-- Sottostante -->
+    <div class="card">
+      <div class="card-title">Sottostante</div>
+      <div class="check-input-row"><label>Ticker</label><input type="text" id="in-ticker" placeholder="es. AAPL" oninput="update()"></div>
+      <div class="check-input-row"><label>Prezzo spot ($)</label><input type="number" id="in-spot" placeholder="189.50" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'earnings')" data-id="earnings" data-critical="true">
+        <div class="check-box critical" id="cb-earnings"></div>
+        <span class="check-label">No earnings entro 14 giorni <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'exdiv')" data-id="exdiv">
+        <div class="check-box" id="cb-exdiv"></div>
+        <span class="check-label">Data ex-dividendo verificata</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'settle')" data-id="settle">
+        <div class="check-box" id="cb-settle"></div>
+        <span class="check-label">Settlement cash (non physical)</span>
+      </div>
+    </div>
+
+    <!-- Volatilità -->
+    <div class="card">
+      <div class="card-title">Volatilità</div>
+      <div class="check-input-row"><label>IV corrente (%)</label><input type="number" id="in-iv" placeholder="28" oninput="update()"></div>
+      <div class="check-input-row"><label>HV corrente (%)</label><input type="number" id="in-hv" placeholder="22" oninput="update()"></div>
+      <div class="check-input-row"><label>IV rank (%)</label><input type="number" id="in-ivr" placeholder="65" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'ivrank')" data-id="ivrank" data-critical="true">
+        <div class="check-box critical" id="cb-ivrank"></div>
+        <span class="check-label">IV rank ≥ 60% <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'ivoverhv')" data-id="ivoverhv">
+        <div class="check-box" id="cb-ivoverhv"></div>
+        <span class="check-label">IV sopra HV (premium gonfiato)</span>
+      </div>
+    </div>
+
+    <!-- Strike e DTE -->
+    <div class="card">
+      <div class="card-title">Strike e DTE</div>
+      <div class="check-input-row"><label>Strike scelto ($)</label><input type="number" id="in-strike" placeholder="180" oninput="update()"></div>
+      <div class="check-input-row"><label>Delta</label><input type="number" id="in-delta" placeholder="0.18" step="0.01" oninput="update()"></div>
+      <div class="check-input-row"><label>DTE (giorni)</label><input type="number" id="in-dte" placeholder="30" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'delta')" data-id="delta" data-critical="true">
+        <div class="check-box critical" id="cb-delta"></div>
+        <span class="check-label">Delta ≤ 0.20 <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'dte')" data-id="dte" data-warn="true">
+        <div class="check-box" id="cb-dte"></div>
+        <span class="check-label">DTE 21–45 giorni <span class="tag tag-warn">consigliato</span></span>
+      </div>
+    </div>
+
+    <!-- Liquidità -->
+    <div class="card">
+      <div class="card-title">Liquidità</div>
+      <div class="check-input-row"><label>Open interest</label><input type="number" id="in-oi" placeholder="5000" oninput="update()"></div>
+      <div class="check-input-row"><label>Bid ($)</label><input type="number" id="in-bid" placeholder="3.20" step="0.01" oninput="update()"></div>
+      <div class="check-input-row"><label>Ask ($)</label><input type="number" id="in-ask" placeholder="3.40" step="0.01" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'liq')" data-id="liq" data-critical="true">
+        <div class="check-box critical" id="cb-liq"></div>
+        <span class="check-label">Spread bid-ask ≤ 15% <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'oi')" data-id="oi">
+        <div class="check-box" id="cb-oi"></div>
+        <span class="check-label">Open interest &gt; 500 contratti</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════ -->
+<!-- FASE 2 — CONTRATTO -->
+<!-- ══════════════════════════ -->
+<div class="phase ph-2" id="ph2">
+  <div class="phase-header" onclick="togglePhase('ph2-body')">
+    <div class="phase-title">2 — Parametri del contratto (cosa scrivi)</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="phase-score" id="score-ph2">0/0</div>
+      <span class="phase-toggle" id="tog-ph2-body">▲</span>
+    </div>
+  </div>
+  <div class="phase-body" id="ph2-body">
+
+    <!-- Premio e rischio -->
+    <div class="card">
+      <div class="card-title">Premio e rischio</div>
+      <div class="check-input-row"><label>Premio incassato ($)</label><input type="number" id="in-prem" placeholder="3.50" step="0.01" oninput="update()"></div>
+      <div class="check-input-row"><label>N° contratti</label><input type="number" id="in-qty" placeholder="1" oninput="update()"></div>
+      <div id="noz-calc" style="font-size:11px;color:#6b7280;padding:4px 0;border-bottom:1px solid #f8fafc"></div>
+      <div class="check-item" onclick="toggle(this,'breakeven')" data-id="breakeven">
+        <div class="check-box" id="cb-breakeven"></div>
+        <span class="check-label">Breakeven calcolato e annotato</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'maxloss')" data-id="maxloss">
+        <div class="check-box" id="cb-maxloss"></div>
+        <span class="check-label">Max loss accettabile mentalmente</span>
+      </div>
+    </div>
+
+    <!-- Sizing -->
+    <div class="card">
+      <div class="card-title">Sizing e margine</div>
+      <div class="check-input-row"><label>Capitale totale ($)</label><input type="number" id="in-cap" placeholder="10000" oninput="update()"></div>
+      <div id="sizing-calc" style="font-size:11px;color:#6b7280;padding:4px 0;border-bottom:1px solid #f8fafc"></div>
+      <div class="check-item" onclick="toggle(this,'sizing')" data-id="sizing" data-critical="true">
+        <div class="check-box critical" id="cb-sizing"></div>
+        <span class="check-label">Capitale rischiato ≤ 2% <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'margin')" data-id="margin">
+        <div class="check-box" id="cb-margin"></div>
+        <span class="check-label">Margine disponibile sufficiente</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sellstop')" data-id="sellstop" data-critical="true">
+        <div class="check-box critical" id="cb-sellstop"></div>
+        <span class="check-label">Sell stop level definito <span class="tag tag-critical">critico</span></span>
+      </div>
+    </div>
+
+    <!-- Greche -->
+    <div class="card">
+      <div class="card-title">Greche annotate</div>
+      <div class="check-item" onclick="toggle(this,'g-delta')" data-id="g-delta">
+        <div class="check-box" id="cb-g-delta"></div>
+        <span class="check-label">Delta annotato</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'g-theta')" data-id="g-theta">
+        <div class="check-box" id="cb-g-theta"></div>
+        <span class="check-label">Theta/day annotato ($)</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'g-vega')" data-id="g-vega">
+        <div class="check-box" id="cb-g-vega"></div>
+        <span class="check-label">Vega annotato</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'g-pop')" data-id="g-pop">
+        <div class="check-box" id="cb-g-pop"></div>
+        <span class="check-label">PoP short annotata (%)</span>
+      </div>
+    </div>
+
+    <!-- Hedge -->
+    <div class="card">
+      <div class="card-title">Hedge meccanico</div>
+      <div class="check-item" onclick="toggle(this,'h-placed')" data-id="h-placed" data-critical="true">
+        <div class="check-box critical" id="cb-h-placed"></div>
+        <span class="check-label">Sell stop piazzato contestualmente <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'h-level')" data-id="h-level">
+        <div class="check-box" id="cb-h-level"></div>
+        <span class="check-label">Livello stop = strike venduto</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'h-shares')" data-id="h-shares">
+        <div class="check-box" id="cb-h-shares"></div>
+        <span class="check-label">N° azioni hedge = contratti × 100</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════ -->
+<!-- FASE 3 — DURANTE -->
+<!-- ══════════════════════════ -->
+<div class="phase ph-3" id="ph3">
+  <div class="phase-header" onclick="togglePhase('ph3-body')">
+    <div class="phase-title">3 — Durante (monitoraggio giornaliero)</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="phase-score" id="score-ph3">0/0</div>
+      <span class="phase-toggle" id="tog-ph3-body">▲</span>
+    </div>
+  </div>
+  <div class="phase-body" id="ph3-body">
+
+    <div class="card">
+      <div class="card-title">Segnali di uscita</div>
+      <div class="check-input-row"><label>P&L attuale ($)</label><input type="number" id="in-pnl" placeholder="210" oninput="update()"></div>
+      <div id="pnl-calc" style="font-size:11px;color:#6b7280;padding:4px 0;border-bottom:1px solid #f8fafc"></div>
+      <div class="check-item" onclick="toggle(this,'exit80')" data-id="exit80" data-critical="true">
+        <div class="check-box critical" id="cb-exit80"></div>
+        <span class="check-label">80% del premio raggiunto? → chiudi <span class="tag tag-critical">regola</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'stoploss')" data-id="stoploss">
+        <div class="check-box" id="cb-stoploss"></div>
+        <span class="check-label">Stop loss non toccato</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'rollcheck')" data-id="rollcheck">
+        <div class="check-box" id="cb-rollcheck"></div>
+        <span class="check-label">Roll valutato se DTE ≤ 7</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gamma risk</div>
+      <div class="check-item" onclick="toggle(this,'gammaok')" data-id="gammaok">
+        <div class="check-box" id="cb-gammaok"></div>
+        <span class="check-label">DTE &gt; 7 (gamma nella norma)</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'deltashift')" data-id="deltashift">
+        <div class="check-box" id="cb-deltashift"></div>
+        <span class="check-label">Delta non si è spostato oltre 0.40</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'ivcollapse')" data-id="ivcollapse">
+        <div class="check-box" id="cb-ivcollapse"></div>
+        <span class="check-label">No IV crush inatteso</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Hedge attivo</div>
+      <div class="check-item" onclick="toggle(this,'stopactive')" data-id="stopactive" data-critical="true">
+        <div class="check-box critical" id="cb-stopactive"></div>
+        <span class="check-label">Sell stop ancora attivo sul broker <span class="tag tag-critical">critico</span></span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'gapok')" data-id="gapok">
+        <div class="check-box" id="cb-gapok"></div>
+        <span class="check-label">Nessun gap overnight anomalo</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'physok')" data-id="physok">
+        <div class="check-box" id="cb-physok"></div>
+        <span class="check-label">Physical delivery non imminente</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Confronto mercato</div>
+      <div class="check-input-row"><label>SPY % da apertura</label><input type="text" id="in-spy" placeholder="+1.2%" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'spycheck')" data-id="spycheck">
+        <div class="check-box" id="cb-spycheck"></div>
+        <span class="check-label">Performance vs SPY annotata</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'regimeok')" data-id="regimeok">
+        <div class="check-box" id="cb-regimeok"></div>
+        <span class="check-label">Regime mercato ancora favorevole</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════ -->
+<!-- FASE 4 — DOPO -->
+<!-- ══════════════════════════ -->
+<div class="phase ph-4" id="ph4">
+  <div class="phase-header" onclick="togglePhase('ph4-body')">
+    <div class="phase-title">4 — Dopo (log post-trade obbligatorio)</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="phase-score" id="score-ph4">0/0</div>
+      <span class="phase-toggle" id="tog-ph4-body">▲</span>
+    </div>
+  </div>
+  <div class="phase-body" id="ph4-body">
+
+    <div class="card">
+      <div class="card-title">Risultato</div>
+      <div class="check-input-row"><label>Data apertura</label><input type="date" id="in-open" oninput="update()"></div>
+      <div class="check-input-row"><label>Data chiusura</label><input type="date" id="in-close" oninput="update()"></div>
+      <div class="check-input-row"><label>P&L finale ($)</label><input type="number" id="in-pfinal" placeholder="-420" oninput="update()"></div>
+      <div class="check-item" onclick="toggle(this,'log-result')" data-id="log-result">
+        <div class="check-box" id="cb-log-result"></div>
+        <span class="check-label">Risultato registrato nel log</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'log-spy')" data-id="log-spy">
+        <div class="check-box" id="cb-log-spy"></div>
+        <span class="check-label">Confronto SPY registrato</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Errori di processo</div>
+      <div class="check-item" onclick="toggle(this,'err-ivr')" data-id="err-ivr">
+        <div class="check-box" id="cb-err-ivr"></div>
+        <span class="check-label">IV rank era ≥ 60% all'apertura?</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'err-delta')" data-id="err-delta">
+        <div class="check-box" id="cb-err-delta"></div>
+        <span class="check-label">Delta era ≤ 0.20 all'apertura?</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'err-80')" data-id="err-80">
+        <div class="check-box" id="cb-err-80"></div>
+        <span class="check-label">Ho rispettato la regola 80%?</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'err-hedge')" data-id="err-hedge">
+        <div class="check-box" id="cb-err-hedge"></div>
+        <span class="check-label">Hedge era attivo per tutta la durata?</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'err-sizing')" data-id="err-sizing">
+        <div class="check-box" id="cb-err-sizing"></div>
+        <span class="check-label">Sizing era ≤ 2% del capitale?</span>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column:span 2">
+      <div class="card-title">Lezione appresa</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">Cosa ha funzionato</div>
+          <textarea id="in-ok" placeholder="es. IV rank era alto, theta ha lavorato bene..." style="width:100%;font-size:12px;padding:6px;border:1px solid #e2e8f0;border-radius:6px;min-height:60px;resize:vertical;color:#111;background:#fff" oninput="update()"></textarea>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">Cosa non ha funzionato</div>
+          <textarea id="in-ko" placeholder="es. Non ho chiuso all'80%, ho aspettato troppo..." style="width:100%;font-size:12px;padding:6px;border:1px solid #e2e8f0;border-radius:6px;min-height:60px;resize:vertical;color:#111;background:#fff" oninput="update()"></textarea>
+        </div>
+      </div>
+      <div class="check-item" style="margin-top:8px" onclick="toggle(this,'log-lesson')" data-id="log-lesson">
+        <div class="check-box" id="cb-log-lesson"></div>
+        <span class="check-label">Lezione annotata e applicabile al prossimo trade</span>
+      </div>
+      <div class="check-item" onclick="toggle(this,'log-repeat')" data-id="log-repeat">
+        <div class="check-box" id="cb-log-repeat"></div>
+        <span class="check-label">Ripeterei questo setup? (spunta = sì)</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════ -->
+<!-- SEMAFORO FINALE -->
+<!-- ══════════════════════════ -->
+<div class="semaforo sem-grigio" id="semaforo">
+  <div class="sem-header">
+    <div class="sem-dot dot-grigio" id="sem-dot"></div>
+    <div class="sem-title" id="sem-title">Compila la checklist per vedere il verdetto</div>
+  </div>
+  <div class="sem-msg" id="sem-msg">Inizia dalla Fase 1 — filtri di ingresso.</div>
+  <div class="sem-blockers" id="sem-blockers"></div>
+
+  <!-- BARRE PUNTEGGIO PER SEZIONE -->
+  <div class="score-section" id="score-section" style="display:none">
+    <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Punteggio per fase</div>
+    <div class="score-row"><span class="score-label">1 — Filtri ingresso</span><div class="score-bar"><div class="score-fill" id="sf1" style="width:0%;background:#1D9E75"></div></div><span class="score-pct" id="sp1">0%</span></div>
+    <div class="score-row"><span class="score-label">2 — Contratto</span><div class="score-bar"><div class="score-fill" id="sf2" style="width:0%;background:#BA7517"></div></div><span class="score-pct" id="sp2">0%</span></div>
+    <div class="score-row"><span class="score-label">3 — Monitoraggio</span><div class="score-bar"><div class="score-fill" id="sf3" style="width:0%;background:#534AB7"></div></div><span class="score-pct" id="sp3">0%</span></div>
+    <div class="score-row"><span class="score-label">4 — Post-trade</span><div class="score-bar"><div class="score-fill" id="sf4" style="width:0%;background:#3B6D11"></div></div><span class="score-pct" id="sp4">0%</span></div>
+  </div>
+</div>
+
+<button class="btn-reset" onclick="resetAll()">↺ Azzera tutto e ricomincia</button>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+const checked = new Set();
+
+const CRITICALS = ['earnings','ivrank','delta','liq','sizing','sellstop','h-placed','exit80','stopactive'];
+
+const PHASE_CHECKS = {
+  1: ['earnings','exdiv','settle','ivrank','ivoverhv','delta','dte','liq','oi'],
+  2: ['breakeven','maxloss','sizing','margin','sellstop','g-delta','g-theta','g-vega','g-pop','h-placed','h-level','h-shares'],
+  3: ['exit80','stoploss','rollcheck','gammaok','deltashift','ivcollapse','stopactive','gapok','physok','spycheck','regimeok'],
+  4: ['log-result','log-spy','err-ivr','err-delta','err-80','err-hedge','err-sizing','log-lesson','log-repeat']
+};
+
+const ALL_CHECKS = [...PHASE_CHECKS[1],...PHASE_CHECKS[2],...PHASE_CHECKS[3],...PHASE_CHECKS[4]];
+
+// ─── TOGGLE ──────────────────────────────────────────────────────
+function toggle(row, id) {
+  const cb = document.getElementById('cb-' + id);
+  if (checked.has(id)) {
+    checked.delete(id);
+    cb.classList.remove('checked');
+  } else {
+    checked.add(id);
+    cb.classList.add('checked');
+  }
+  update();
+}
+
+// ─── TOGGLE PHASE ────────────────────────────────────────────────
+function togglePhase(id) {
+  const body = document.getElementById(id);
+  const tog = document.getElementById('tog-' + id);
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? 'grid' : 'none';
+  if (tog) tog.textContent = hidden ? '▲' : '▼';
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? parseFloat(el.value) || 0 : 0;
+}
+function str(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+// ─── UPDATE ──────────────────────────────────────────────────────
+function update() {
+  updateCalcs();
+  updateScores();
+  updateSemaforo();
+}
+
+function updateCalcs() {
+  const prem = val('in-prem');
+  const qty = val('in-qty') || 1;
+  const cap = val('in-cap');
+  const pnlNow = val('in-pnl');
+
+  // Nozionale
+  const strike = val('in-strike');
+  const noz = strike * 100 * qty;
+  const premTot = prem * 100 * qty;
+  const be = strike - prem;
+  const nozEl = document.getElementById('noz-calc');
+  if (prem && strike) {
+    nozEl.textContent = `Nozionale: $${noz.toLocaleString()} · Premio totale: $${premTot.toLocaleString()} · Breakeven: $${be.toFixed(2)}`;
+  } else {
+    nozEl.textContent = 'Inserisci strike e premio per vedere i calcoli';
+  }
+
+  // Sizing
+  const sizingEl = document.getElementById('sizing-calc');
+  if (cap && premTot) {
+    const pct = (premTot / cap * 100).toFixed(1);
+    const ok = parseFloat(pct) <= 2;
+    sizingEl.textContent = `Capitale rischiato: $${premTot.toLocaleString()} = ${pct}% del totale ${ok ? '✓ ok' : '✗ troppo alto!'}`;
+    sizingEl.style.color = ok ? '#059669' : '#dc2626';
+  } else {
+    sizingEl.textContent = 'Inserisci capitale totale, premio e contratti';
+  }
+
+  // P&L %
+  const pnlEl = document.getElementById('pnl-calc');
+  if (pnlNow && premTot) {
+    const pct = (pnlNow / premTot * 100).toFixed(0);
+    const hit80 = parseFloat(pct) >= 80;
+    pnlEl.textContent = `Profitto: ${pct}% del massimo ${hit80 ? '→ CHIUDI ORA (regola 80%)' : ''}`;
+    pnlEl.style.color = hit80 ? '#dc2626' : '#059669';
+  } else {
+    pnlEl.textContent = 'Inserisci P&L attuale e premio per vedere la %';
+  }
+}
+
+function updateScores() {
+  let total = 0, totalDone = 0;
+
+  for (let ph = 1; ph <= 4; ph++) {
+    const checks = PHASE_CHECKS[ph];
+    const done = checks.filter(c => checked.has(c)).length;
+    const pct = Math.round(done / checks.length * 100);
+    document.getElementById('score-ph' + ph).textContent = `${done}/${checks.length}`;
+    document.getElementById('sf' + ph).style.width = pct + '%';
+    document.getElementById('sp' + ph).textContent = pct + '%';
+    total += checks.length;
+    totalDone += done;
+  }
+
+  const globalPct = Math.round(totalDone / total * 100);
+  document.getElementById('global-score').textContent = globalPct + '%';
+  const bar = document.getElementById('global-bar');
+  bar.style.width = globalPct + '%';
+  bar.style.background = globalPct >= 80 ? '#22c55e' : globalPct >= 50 ? '#f59e0b' : '#d1d5db';
+}
+
+function updateSemaforo() {
+  const dot = document.getElementById('sem-dot');
+  const title = document.getElementById('sem-title');
+  const msg = document.getElementById('sem-msg');
+  const blockers = document.getElementById('sem-blockers');
+  const sem = document.getElementById('semaforo');
+  const scoreSection = document.getElementById('score-section');
+
+  const totalDone = ALL_CHECKS.filter(c => checked.has(c)).length;
+  const totalAll = ALL_CHECKS.length;
+  const pct = totalDone / totalAll;
+
+  // Check critici mancanti
+  const missingCriticals = CRITICALS.filter(c => !checked.has(c));
+
+  // Quanti critici mancano in fase 1 e 2 (rilevanti pre-apertura)
+  const critPre = ['earnings','ivrank','delta','liq','sizing','sellstop','h-placed'];
+  const missingPre = critPre.filter(c => !checked.has(c));
+
+  const labels = {
+    earnings: 'No earnings entro 14 giorni',
+    ivrank: 'IV rank ≥ 60%',
+    delta: 'Delta ≤ 0.20',
+    liq: 'Spread bid-ask ≤ 15%',
+    sizing: 'Capitale rischiato ≤ 2%',
+    sellstop: 'Sell stop level definito',
+    'h-placed': 'Sell stop piazzato contestualmente',
+    exit80: 'Valutazione regola 80%',
+    stopactive: 'Sell stop ancora attivo'
+  };
+
+  if (totalDone === 0) {
+    sem.className = 'semaforo sem-grigio';
+    dot.className = 'sem-dot dot-grigio';
+    title.textContent = 'Compila la checklist per vedere il verdetto';
+    msg.textContent = 'Inizia dalla Fase 1 — filtri di ingresso.';
+    blockers.innerHTML = '';
+    scoreSection.style.display = 'none';
+    return;
+  }
+
+  scoreSection.style.display = 'block';
+
+  if (missingPre.length > 0) {
+    // ROSSO — critico mancante
+    sem.className = 'semaforo sem-rosso';
+    dot.className = 'sem-dot dot-rosso';
+    title.textContent = 'Trade bloccato — check critici mancanti';
+    msg.textContent = 'Non aprire questa posizione. I seguenti filtri obbligatori non sono soddisfatti:';
+    blockers.innerHTML = missingPre.map(c =>
+      `<div class="blocker-item">${labels[c] || c}</div>`
+    ).join('');
+  } else if (pct < 0.5) {
+    // GIALLO — pochi check completati
+    sem.className = 'semaforo sem-giallo';
+    dot.className = 'sem-dot dot-giallo';
+    title.textContent = 'Incompleto — continua la valutazione';
+    msg.textContent = `Check completati: ${Math.round(pct*100)}%. I filtri critici sono ok ma mancano ancora molte verifiche prima di aprire.`;
+    blockers.innerHTML = '';
+  } else if (pct >= 0.5 && pct < 0.80) {
+    // GIALLO-VERDE — quasi pronto
+    sem.className = 'semaforo sem-giallo';
+    dot.className = 'sem-dot dot-giallo';
+    title.textContent = 'Quasi pronto — verifica i dettagli';
+    msg.textContent = `${Math.round(pct*100)}% completato. Filtri critici ok. Completa le verifiche rimanenti prima di aprire.`;
+    const remaining = ALL_CHECKS.filter(c => !checked.has(c));
+    blockers.innerHTML = remaining.slice(0,3).map(c =>
+      `<div class="warn-item">${labels[c] || c.replace(/-/g,' ')}</div>`
+    ).join('') + (remaining.length > 3 ? `<div class="warn-item">e altri ${remaining.length-3} check...</div>` : '');
+  } else {
+    // VERDE — tutto ok
+    sem.className = 'semaforo sem-verde';
+    dot.className = 'sem-dot dot-verde';
+    title.textContent = 'Trade validato — puoi procedere';
+    msg.textContent = `${Math.round(pct*100)}% completato. Tutti i filtri critici sono soddisfatti. Il setup è operativamente corretto.`;
+
+    // Calcola EV semplice se hai i dati
+    const prem = val('in-prem');
+    const strike = val('in-strike');
+    const qty = val('in-qty') || 1;
+    if (prem && strike) {
+      const premTot = prem * 100 * qty;
+      const maxLoss = (strike - prem) * 100 * qty;
+      const ev = (0.80 * premTot - 0.20 * maxLoss).toFixed(0);
+      blockers.innerHTML = `<div style="font-size:12px;color:#166534;margin-top:4px">EV stimato (80% PoP): $${parseFloat(ev) > 0 ? '+' : ''}${ev} · Premio totale: $${premTot.toLocaleString()} · Max loss: $${maxLoss.toLocaleString()}</div>`;
+    } else {
+      blockers.innerHTML = '';
+    }
+  }
+}
+
+// ─── RESET ───────────────────────────────────────────────────────
+function resetAll() {
+  checked.clear();
+  document.querySelectorAll('.check-box').forEach(cb => cb.classList.remove('checked'));
+  document.querySelectorAll('input[type=number], input[type=text], input[type=date], textarea').forEach(el => el.value = '');
+  update();
+}
+
+// Init
+update();
+</script>
+</body>
+</html>
