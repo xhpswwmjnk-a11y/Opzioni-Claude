@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dove trovare i dati — Checklist Opzioni</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f1f5f9;color:#111;padding:16px;max-width:800px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.subtitle{font-size:13px;color:#6b7280;margin-bottom:20px;line-height:1.6}
+
+.section{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:14px;overflow:hidden}
+.section-header{padding:12px 16px;border-bottom:1px solid #e2e8f0}
+.section-title{font-size:14px;font-weight:700}
+.section-sub{font-size:12px;color:#6b7280;margin-top:2px}
+
+.dato{padding:14px 16px;border-bottom:1px solid #f1f5f9}
+.dato:last-child{border-bottom:none}
+.dato-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.dato-name{font-size:13px;font-weight:700;color:#111}
+.dato-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.tag-free{background:#dcfce7;color:#14532d}
+.tag-paid{background:#fef9c3;color:#713f12}
+.tag-broker{background:#dbeafe;color:#1e40af}
+
+.dato-desc{font-size:12px;color:#6b7280;margin-bottom:10px;line-height:1.5}
+
+.sources{display:flex;flex-direction:column;gap:6px}
+.source{border-radius:8px;padding:10px 12px}
+.source-primary{background:#f0fdf4;border:1px solid #86efac}
+.source-secondary{background:#f8fafc;border:1px solid #e2e8f0}
+.source-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.source-site{font-size:12px;font-weight:700}
+.source-primary .source-site{color:#14532d}
+.source-secondary .source-site{color:#374151}
+.source-badge{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px}
+.sb-consigliato{background:#dcfce7;color:#14532d}
+.sb-alternativa{background:#f3f4f6;color:#6b7280}
+.source-path{font-size:12px;color:#6b7280;line-height:1.5}
+.source-primary .source-path{color:#166534}
+
+.step-list{list-style:none;display:flex;flex-direction:column;gap:3px}
+.step-list li{font-size:12px;color:#374151;display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.step-list li::before{content:counter(step);counter-increment:step;background:#1a56db;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-list{counter-reset:step}
+
+.alert-box{border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;line-height:1.5}
+.alert-info{background:#eff6ff;border-left:3px solid #3b82f6;color:#1e40af}
+.alert-warn{background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e}
+
+.divider{height:1px;background:#f1f5f9;margin:4px 0}
+
+/* COLORI SEZIONI */
+.s1 .section-header{background:#E1F5EE}.s1 .section-title{color:#085041}
+.s2 .section-header{background:#EEEDFE}.s2 .section-title{color:#26215C}
+.s3 .section-header{background:#FAEEDA}.s3 .section-title{color:#633806}
+.s4 .section-header{background:#EAF3DE}.s4 .section-title{color:#173404}
+.s5 .section-header{background:#FAECE7}.s5 .section-title{color:#4A1B0C}
+.s6 .section-header{background:#E6F1FB}.s6 .section-title{color:#042C53}
+</style>
+</head>
+<body>
+
+<h1>Dove trovare i dati — Checklist Opzioni</h1>
+<p class="subtitle">Guida completa per trovare ogni singolo dato da inserire nella checklist smart.<br>Tutti i siti indicati hanno una versione gratuita sufficiente per iniziare.</p>
+
+<!-- ══════════════════════════════════ -->
+<!-- 1. PREZZO SPOT -->
+<!-- ══════════════════════════════════ -->
+<div class="section s1">
+  <div class="section-header">
+    <div class="section-title">Prezzo spot (prezzo corrente del titolo)</div>
+    <div class="section-sub">Il prezzo al quale il titolo viene scambiato in questo momento</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Prezzo corrente ($)</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Il prezzo di mercato attuale del sottostante (azione, ETF). È il punto di partenza per tutto il resto.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca il ticker in alto (es. "AAPL") → il prezzo grande in cima alla pagina è lo spot corrente.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">tradingview.com</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Cerca il ticker nella barra in alto → il prezzo è visibile sul grafico e in alto a sinistra.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">Google</span><span class="source-badge sb-alternativa">veloce</span></div>
+        <div class="source-path">Cerca direttamente "AAPL stock price" su Google → mostra il prezzo aggiornato direttamente nei risultati.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- 2. VOLATILITÀ (IV, HV, IV RANK) -->
+<!-- ══════════════════════════════════ -->
+<div class="section s2">
+  <div class="section-header">
+    <div class="section-title">Volatilità — IV, HV e IV Rank</div>
+    <div class="section-sub">I tre dati più importanti per decidere se vendere premium ha senso</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">IV (Implied Volatility) — volatilità implicita %</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Misura quanto il mercato si aspetta che il titolo si muova. Alta IV = premi più alti = meglio per il venditore.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">marketchameleon.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca il ticker → sezione "Volatility" → "Implied Volatility" è la IV corrente dell'ATM.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">barchart.com</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Cerca ticker → "Options" → "Volatility" → colonna "IV%" sulle opzioni ATM.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-alternativa">base</span></div>
+        <div class="source-path">Cerca ticker → tab "Options" → colonna "Implied Volatility" sulla chain delle opzioni.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">HV (Historical Volatility) — volatilità storica %</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Quanto il titolo si è effettivamente mosso negli ultimi 30 giorni. Se IV > HV il mercato sta prezzando più paura di quella che c'è stata — buon segno per vendere premium.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">marketchameleon.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca ticker → "Volatility" → "Historical Volatility 30d" è la HV standard da usare.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">ivolatility.com</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Cerca ticker → mostra IV e HV a 30 giorni affiancate con grafico storico.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">IV Rank % — il dato più importante</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Dice dove si trova la IV attuale rispetto agli ultimi 52 settimane. 0% = minimo storico, 100% = massimo storico. Vuoi ≥ 60% per vendere premium. Questo è IL dato che decide se il trade ha senso.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">marketchameleon.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca ticker → "Volatility" → "IV Rank" — è scritto esplicitamente come percentuale.</div>
+      </div>
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">tastytrade.com (sezione gratuita)</span><span class="source-badge sb-consigliato">ottimo</span></div>
+        <div class="source-path">Cerca ticker nella watchlist → colonna "IVR" (IV Rank) visibile direttamente. Uno dei pochi siti che lo mostra in modo chiaro e gratuito.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">barchart.com</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Cerca ticker → "Options" → "IV Percentile" — simile a IV Rank, usa questo se non trovi IV Rank.</div>
+      </div>
+    </div>
+    <div class="alert-box alert-info" style="margin-top:8px">
+      IV Rank e IV Percentile non sono la stessa cosa ma per i tuoi scopi attuali puoi usarli intercambiabilmente. Entrambi ti dicono se la IV è storicamente alta o bassa.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- 3. STRIKE, DELTA, DTE -->
+<!-- ══════════════════════════════════ -->
+<div class="section s3">
+  <div class="section-header">
+    <div class="section-title">Strike, Delta e DTE — dalla chain delle opzioni</div>
+    <div class="section-sub">Tutti e tre si trovano nella stessa pagina: la option chain del titolo</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Come leggere la option chain</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">La option chain è la tabella che mostra tutti i contratti disponibili per un titolo — ogni riga è uno strike diverso, le colonne mostrano prezzo, delta, volume e altri dati.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-consigliato">più semplice per iniziare</span></div>
+        <ul class="step-list" style="margin-top:6px">
+          <li>Cerca il ticker (es. "AAPL")</li>
+          <li>Clicca il tab "Options" in alto</li>
+          <li>Scegli la scadenza dal menu a tendina (scegli quella a 21-45 giorni)</li>
+          <li>Vedi la tabella delle PUT in basso — ogni riga è uno strike diverso</li>
+          <li>Cerca lo strike con Delta intorno a 0.15-0.20 (colonna "Delta" — nota: su Yahoo appare come valore negativo per le put, es. -0.18)</li>
+        </ul>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">barchart.com</span><span class="source-badge sb-alternativa">più dati</span></div>
+        <ul class="step-list" style="margin-top:6px">
+          <li>Cerca ticker → clicca "Options"</li>
+          <li>Seleziona scadenza desiderata</li>
+          <li>Vedi colonne: Strike, Bid, Ask, Delta, IV, Open Interest, Volume</li>
+          <li>Cerca la riga PUT con Delta tra -0.15 e -0.20</li>
+        </ul>
+      </div>
+    </div>
+    <div class="alert-box alert-warn">
+      Il Delta delle PUT è negativo per convenzione (es. -0.18). Nella checklist inserisci il valore assoluto: 0.18, non -0.18.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">DTE (Days To Expiration)</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Quanti giorni mancano alla scadenza del contratto. Si calcola dalla data di oggi alla data di scadenza scritta sulla chain.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">Calcolo manuale</span><span class="source-badge sb-consigliato">semplice</span></div>
+        <div class="source-path">La scadenza è scritta sulla chain (es. "Jan 17, 2025"). Conta i giorni da oggi a quella data — oppure cerca "date calculator" su Google e inserisci le due date.</div>
+      </div>
+    </div>
+    <div class="alert-box alert-info">
+      Cerca scadenze a 21-45 giorni. Le scadenze mensili (terzo venerdì del mese) hanno sempre più liquidità di quelle settimanali — preferiscile finché non hai esperienza.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- 4. LIQUIDITÀ (BID, ASK, OI) -->
+<!-- ══════════════════════════════════ -->
+<div class="section s4">
+  <div class="section-header">
+    <div class="section-title">Liquidità — Bid, Ask e Open Interest</div>
+    <div class="section-sub">Tutti sulla option chain, stessa pagina degli strike</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Bid e Ask del contratto</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Bid = quanto il mercato paga per comprare. Ask = quanto vuole per vendere. Tu come venditore di put incassi vicino al Bid. La differenza tra i due è il tuo costo di entrata.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com → Options</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Sulla chain delle PUT, trova la riga con lo strike che ti interessa → colonne "Bid" e "Ask" sono affiancate. Il Mid (prezzo medio) è (Bid+Ask)/2 — quello è il prezzo realistico che incasserai.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">barchart.com → Options</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Stessa logica — colonne Bid e Ask visibili sulla chain. Barchart mostra anche il Mid calcolato automaticamente.</div>
+      </div>
+    </div>
+    <div class="alert-box alert-info">
+      Calcolo spread %: (Ask - Bid) / ((Ask + Bid) / 2) × 100. Se il risultato è oltre il 15% la liquidità è troppo bassa. Esempio: Bid 3.20, Ask 3.60 → spread = 0.40 / 3.40 × 100 = 11.8% — accettabile.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Open Interest</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Numero di contratti aperti su quello strike specifico. Più è alto, più è liquido. Vuoi almeno 500 per essere sicuro di poter uscire quando vuoi.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com → Options</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Sulla chain → colonna "Open Interest" — è il numero accanto a Volume. Volume = scambi di oggi, Open Interest = totale contratti aperti. Guarda Open Interest, non Volume.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- 5. EARNINGS E DIVIDENDI -->
+<!-- ══════════════════════════════════ -->
+<div class="section s5">
+  <div class="section-header">
+    <div class="section-title">Earnings e dividendi — date da verificare sempre</div>
+    <div class="section-sub">I due eventi che possono distruggere un trade ben impostato</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Data prossimi Earnings (risultati trimestrali)</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">La pubblicazione degli utili fa esplodere la IV prima e collassare dopo. Se ci sono earnings entro 14 giorni dalla scadenza che hai scelto, il trade non si fa. Punto.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca ticker → nella scheda principale cerca "Earnings Date" nella sezione destra della pagina. È scritto chiaramente con la data esatta o un range (es. "Nov 1 - Nov 5").</div>
+      </div>
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">earningswhispers.com</span><span class="source-badge sb-consigliato">più preciso</span></div>
+        <div class="source-path">Sito dedicato solo alle date degli earnings. Cerca il ticker e vedi data confermata, ora (pre/post market) e stime degli analisti.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">marketchameleon.com</span><span class="source-badge sb-alternativa">alternativa</span></div>
+        <div class="source-path">Cerca ticker → "Earnings" → mostra storico earnings con date passate e prossima data confermata o stimata.</div>
+      </div>
+    </div>
+    <div class="alert-box alert-warn">
+      Regola pratica: se la data di scadenza che hai scelto è dopo gli earnings, il trade non si fa. Scegli una scadenza che sia prima degli earnings, oppure aspetta che passino.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Data Ex-Dividendo</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">La data in cui bisogna possedere il titolo per ricevere il dividendo. Importante soprattutto per le call americane — chi la detiene potrebbe esercitarla anticipatamente prima dell'ex-div per incassare il dividendo.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca ticker → nella scheda principale cerca "Ex-Dividend Date" nella colonna destra. Se non c'è data vuol dire che il titolo non paga dividendi (es. NVDA, META).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- 6. VIX E REGIME MERCATO -->
+<!-- ══════════════════════════════════ -->
+<div class="section s6">
+  <div class="section-header">
+    <div class="section-title">VIX e regime di mercato — contesto generale</div>
+    <div class="section-sub">Capire in che tipo di mercato stai operando</div>
+  </div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">VIX — indice della paura del mercato</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Il VIX misura la volatilità implicita dell'indice S&P500. È il termometro della paura del mercato. VIX alto = mercato nervoso = premi alti = buon momento per vendere. VIX basso = mercato calmo = premi bassi = meno conveniente vendere.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">finance.yahoo.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca "^VIX" (con il simbolo ^) → vedi il valore attuale. Sotto 15 = mercato calmo. 15-25 = normale. Sopra 25 = mercato nervoso. Sopra 30 = paura elevata.</div>
+      </div>
+      <div class="source source-secondary">
+        <div class="source-header"><span class="source-site">tradingview.com</span><span class="source-badge sb-alternativa">con grafico</span></div>
+        <div class="source-path">Cerca "VIX" → vedi il grafico storico per capire se siamo in zona alta o bassa rispetto al passato recente.</div>
+      </div>
+    </div>
+    <div class="alert-box alert-info">
+      Per ora non bloccare i trade in base al VIX — usalo solo come contesto. Se il VIX è sotto 15 i premi saranno bassi e potrebbe essere difficile trovare trade con IV rank ≥ 60%. È normale, aspetta.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="dato">
+    <div class="dato-header">
+      <div class="dato-name">Trend del mercato (SPY)</div>
+      <span class="dato-tag tag-free">gratuito</span>
+    </div>
+    <div class="dato-desc">Capire se il mercato è in trend rialzista, ribassista o laterale aiuta a scegliere la direzione del trade. Per una sell put vuoi mercato stabile o moderatamente rialzista.</div>
+    <div class="sources">
+      <div class="source source-primary">
+        <div class="source-header"><span class="source-site">tradingview.com</span><span class="source-badge sb-consigliato">consigliato</span></div>
+        <div class="source-path">Cerca "SPY" → guarda il grafico settimanale (W). Se il prezzo è sopra la media mobile a 50 periodi (MA50) il trend è rialzista. Sotto = ribassista. Laterale = range. Per ora basta questo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- RIEPILOGO RAPIDO -->
+<!-- ══════════════════════════════════ -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px">
+  <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#111">Riepilogo — workflow veloce ogni mattina</div>
+
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:#f8fafc;border-radius:8px">
+      <div style="background:#1a56db;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:2px">Controlla il VIX</div>
+        <div style="font-size:12px;color:#6b7280">finance.yahoo.com → cerca "^VIX" → annota il valore</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:#f8fafc;border-radius:8px">
+      <div style="background:#1a56db;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:2px">Trova candidati dallo screener</div>
+        <div style="font-size:12px;color:#6b7280">Apri la piattaforma v5 → tab Screener → filtra IV rank ≥ 60%, edge alto, liquidità alta</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:#f8fafc;border-radius:8px">
+      <div style="background:#1a56db;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:2px">Verifica earnings e IV rank su marketchameleon.com</div>
+        <div style="font-size:12px;color:#6b7280">Cerca il ticker → controlla IV rank e prossima data earnings</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:#f8fafc;border-radius:8px">
+      <div style="background:#1a56db;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:2px">Apri la option chain su Yahoo Finance</div>
+        <div style="font-size:12px;color:#6b7280">Cerca ticker → Options → scegli scadenza a 21-45gg → trova PUT con delta -0.15/-0.20 → annota Strike, Bid, Ask, Delta, OI</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:#f8fafc;border-radius:8px">
+      <div style="background:#1a56db;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:2px">Compila la checklist smart</div>
+        <div style="font-size:12px;color:#6b7280">Inserisci tutti i dati raccolti → leggi il feedback parametro per parametro → se verde registra nel log</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- BOOKMARK LIST -->
+<!-- ══════════════════════════════════ -->
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px">
+  <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#111">Siti da salvare nei preferiti</div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f0fdf4;border-radius:7px;border:1px solid #86efac">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#14532d">marketchameleon.com</div>
+        <div style="font-size:11px;color:#166534">IV rank, IV, HV, earnings — il tuo sito principale</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;background:#dcfce7;color:#14532d;padding:2px 7px;border-radius:10px">essenziale</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f0fdf4;border-radius:7px;border:1px solid #86efac">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#14532d">finance.yahoo.com</div>
+        <div style="font-size:11px;color:#166534">Option chain, prezzo spot, ex-dividend date</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;background:#dcfce7;color:#14532d;padding:2px 7px;border-radius:10px">essenziale</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#eff6ff;border-radius:7px;border:1px solid #93c5fd">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#1e40af">tradingview.com</div>
+        <div style="font-size:11px;color:#1e40af">Grafici, VIX, trend mercato</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:10px">utile</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#eff6ff;border-radius:7px;border:1px solid #93c5fd">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#1e40af">earningswhispers.com</div>
+        <div style="font-size:11px;color:#1e40af">Date earnings precise e confermate</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:10px">utile</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#eff6ff;border-radius:7px;border:1px solid #93c5fd">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#1e40af">barchart.com</div>
+        <div style="font-size:11px;color:#1e40af">Option chain alternativa con più dati</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:10px">utile</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
