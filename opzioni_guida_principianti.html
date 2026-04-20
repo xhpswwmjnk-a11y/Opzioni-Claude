@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guida alle Opzioni — Principianti</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --font-sans: system-ui, -apple-system, sans-serif;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f4f0;
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #888780;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.22);
+    --color-border-primary: rgba(0,0,0,0.35);
+    --color-border-info: #185FA5;
+    --color-background-info: #E6F1FB;
+    --color-text-info: #0C447C;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a27;
+      --color-text-primary: #e8e6de;
+      --color-text-secondary: #9c9a92;
+      --color-text-tertiary: #6e6c66;
+      --color-border-tertiary: rgba(255,255,255,0.10);
+      --color-border-secondary: rgba(255,255,255,0.20);
+      --color-border-primary: rgba(255,255,255,0.32);
+      --color-border-info: #378ADD;
+      --color-background-info: #0C2A45;
+      --color-text-info: #85B7EB;
+    }
+  }
+  body {
+    margin: 0;
+    padding: 2rem 1.5rem;
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 0.25rem;
+    color: var(--color-text-primary);
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0 0 1.5rem;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  * { box-sizing: border-box; }
+  .screen { display: none; padding: 1.5rem 0; }
+  .screen.active { display: block; }
+  .nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .nav-btn { padding: 6px 14px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: 20px; background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; font-family: var(--font-sans); }
+  .nav-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .card-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 6px; }
+  .card-sub { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.6; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 12px; margin-right: 6px; margin-bottom: 4px; }
+  .badge-call { background: #E6F1FB; color: #0C447C; }
+  .badge-put  { background: #FCEBEB; color: #791F1F; }
+  .badge-long { background: #EAF3DE; color: #27500A; }
+  .badge-short{ background: #FAECE7; color: #712B13; }
+  .badge-itm  { background: #EAF3DE; color: #27500A; }
+  .badge-atm  { background: #FAEEDA; color: #633806; }
+  .badge-otm  { background: #FCEBEB; color: #791F1F; }
+  .tip { border-left: 3px solid var(--color-border-info); padding: 10px 14px; margin: 12px 0; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; background: var(--color-background-info); font-size: 13px; color: var(--color-text-info); line-height: 1.6; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--color-text-tertiary); margin: 1.5rem 0 8px; }
+  .payoff-wrap { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .payoff-title { font-size: 14px; font-weight: 500; margin: 0 0 10px; color: var(--color-text-primary); }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; color: var(--color-text-secondary); }
+  .bar-label { width: 80px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 8px; background: var(--color-border-tertiary); border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+  .bar-val { width: 60px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; font-size: 13px; color: var(--color-text-secondary); }
+  .slider-row input { flex: 1; }
+  .slider-val { min-width: 60px; text-align: right; font-weight: 500; color: var(--color-text-primary); }
+  .strategy-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; cursor: pointer; transition: border-color .15s; background: var(--color-background-primary); }
+  .strategy-card:hover { border-color: var(--color-border-primary); }
+  .strategy-card.expanded .s-detail { display: block; }
+  .s-detail { display: none; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+  .s-header { display: flex; align-items: center; justify-content: space-between; }
+  .s-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .s-arrow { font-size: 12px; color: var(--color-text-tertiary); transition: transform .15s; }
+  .strategy-card.expanded .s-arrow { transform: rotate(90deg); }
+  .ask-btn { width: 100%; margin-top: 16px; padding: 10px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: background .15s; font-family: var(--font-sans); }
+  .ask-btn:hover { background: var(--color-background-secondary); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Guida alle Opzioni</h1>
+  <p class="subtitle">Guida interattiva per principianti — dalla teoria al payoff</p>
+
+  <div class="nav" id="nav">
+    <button class="nav-btn active" onclick="go(0)">Le basi</button>
+    <button class="nav-btn" onclick="go(1)">Call &amp; Put</button>
+    <button class="nav-btn" onclick="go(2)">Moneyness</button>
+    <button class="nav-btn" onclick="go(3)">Payoff</button>
+    <button class="nav-btn" onclick="go(4)">Strategie</button>
+    <button class="nav-btn" onclick="go(5)">Glossario</button>
+  </div>
+
+  <!-- 0: Le basi -->
+  <div class="screen active" id="s0">
+    <div class="card">
+      <p class="card-title">Cos'è un'opzione?</p>
+      <p class="card-sub">Un'opzione è un <strong>contratto</strong> che ti dà il <em>diritto</em> (non l'obbligo) di comprare o vendere un'attività finanziaria a un prezzo stabilito, entro una data precisa.</p>
+    </div>
+    <div class="section-label">3 elementi fondamentali</div>
+    <div class="card">
+      <p class="card-title">📌 Strike price (prezzo di esercizio)</p>
+      <p class="card-sub">Il prezzo al quale puoi comprare o vendere il sottostante. È fissato nel contratto.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">📅 Scadenza (expiry)</p>
+      <p class="card-sub">La data entro cui puoi esercitare il diritto. Dopo quella data, l'opzione scade senza valore.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">💰 Premio (premium)</p>
+      <p class="card-sub">Il prezzo che paghi per acquistare l'opzione. È il tuo costo massimo se sei compratore.</p>
+    </div>
+    <div class="tip">Analogia: il premio è come l'acconto su un appartamento. Paghi oggi per "bloccare" il prezzo. Se poi non compri, perdi solo l'acconto.</div>
+    <div class="grid2">
+      <div class="card">
+        <p class="card-title">Stile europeo</p>
+        <p class="card-sub">Puoi esercitare solo alla scadenza. Più comune su indici.</p>
+      </div>
+      <div class="card">
+        <p class="card-title">Stile americano</p>
+        <p class="card-sub">Puoi esercitare in qualsiasi momento fino alla scadenza. Più flessibile.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1: Call & Put -->
+  <div class="screen" id="s1">
+    <div class="grid2">
+      <div class="card" style="border-left: 3px solid #185FA5;">
+        <p class="card-title">📈 CALL</p>
+        <p class="card-sub">Diritto di <strong>comprare</strong> il sottostante allo strike price.<br><br>Ci guadagni se il prezzo <strong>sale</strong>.</p>
+      </div>
+      <div class="card" style="border-left: 3px solid #A32D2D;">
+        <p class="card-title">📉 PUT</p>
+        <p class="card-sub">Diritto di <strong>vendere</strong> il sottostante allo strike price.<br><br>Ci guadagni se il prezzo <strong>scende</strong>.</p>
+      </div>
+    </div>
+    <div class="section-label">4 posizioni possibili</div>
+    <div class="card">
+      <div class="row"><span class="badge badge-long">LONG</span><span class="badge badge-call">CALL</span></div>
+      <p class="card-title">Comprare una call</p>
+      <p class="card-sub">Spendi il premio. Guadagno illimitato se il titolo sale, perdita massima = premio pagato.</p>
+    </div>
+    <div class="card">
+      <div class="row"><span class="badge badge-short">SHORT</span><span class="badge badge-put">PUT</span></div>
+      <p class="card-title">Vendere una put</p>
+      <p class="card-sub">Incassi il premio. Guadagno massimo = premio ricevuto, perdita elevata se il titolo crolla.</p>
+    </div>
+    <div class="card">
+      <div class="row"><span class="badge badge-long">LONG</span><span class="badge badge-put">PUT</span></div>
+      <p class="card-title">Comprare una put</p>
+      <p class="card-sub">Spendi il premio. Guadagno se il titolo scende. È la protezione classica del portafoglio.</p>
+    </div>
+    <div class="card">
+      <div class="row"><span class="badge badge-short">SHORT</span><span class="badge badge-call">CALL</span></div>
+      <p class="card-title">Vendere una call</p>
+      <p class="card-sub">Incassi il premio. Guadagno massimo = premio, perdita illimitata se il titolo esplode al rialzo.</p>
+    </div>
+    <div class="tip">Regola base: i <strong>compratori</strong> pagano il premio ma hanno rischio limitato. I <strong>venditori</strong> incassano il premio ma assumono rischio maggiore.</div>
+  </div>
+
+  <!-- 2: Moneyness -->
+  <div class="screen" id="s2">
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem;">La <strong>moneyness</strong> descrive il rapporto tra il prezzo attuale del sottostante e lo strike price.</p>
+    <div class="card">
+      <div class="row"><span class="badge badge-itm">IN THE MONEY (ITM)</span></div>
+      <p class="card-sub"><strong>Call ITM:</strong> prezzo sottostante &gt; strike → già conveniente esercitare.<br><strong>Put ITM:</strong> prezzo sottostante &lt; strike → già conveniente esercitare.<br><br>Queste opzioni hanno <em>valore intrinseco</em>.</p>
+    </div>
+    <div class="card">
+      <div class="row"><span class="badge badge-atm">AT THE MONEY (ATM)</span></div>
+      <p class="card-sub">Prezzo sottostante ≈ strike price. Massima sensibilità alle variazioni di prezzo (gamma elevata). Usata spesso nelle strategie.</p>
+    </div>
+    <div class="card">
+      <div class="row"><span class="badge badge-otm">OUT OF THE MONEY (OTM)</span></div>
+      <p class="card-sub"><strong>Call OTM:</strong> prezzo sottostante &lt; strike → non conviene ancora esercitare.<br><strong>Put OTM:</strong> prezzo sottostante &gt; strike → non conviene ancora esercitare.<br><br>Hanno solo <em>valore temporale</em>. Costano meno, ma scadono spesso a zero.</p>
+    </div>
+    <div class="section-label">Esempio visivo — Call con strike 100</div>
+    <div class="payoff-wrap">
+      <div class="bar-row"><span class="bar-label">Sottost. 80</span><div class="bar-track"><div class="bar-fill" style="width:40%;background:#E24B4A"></div></div><span class="bar-val" style="color:#A32D2D">OTM</span></div>
+      <div class="bar-row"><span class="bar-label">Sottost. 95</span><div class="bar-track"><div class="bar-fill" style="width:60%;background:#EF9F27"></div></div><span class="bar-val" style="color:#633806">OTM</span></div>
+      <div class="bar-row"><span class="bar-label">Sottost. 100</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#EF9F27"></div></div><span class="bar-val" style="color:#633806">ATM</span></div>
+      <div class="bar-row"><span class="bar-label">Sottost. 110</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:#639922"></div></div><span class="bar-val" style="color:#27500A">ITM</span></div>
+      <div class="bar-row"><span class="bar-label">Sottost. 130</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#3B6D11"></div></div><span class="bar-val" style="color:#175E0A">ITM</span></div>
+    </div>
+  </div>
+
+  <!-- 3: Payoff interattivo -->
+  <div class="screen" id="s3">
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem;">Muovi i cursori per vedere come cambia il profitto/perdita a scadenza.</p>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+      <button class="nav-btn active" id="pb0" onclick="setPayoff(0)">Long Call</button>
+      <button class="nav-btn" id="pb1" onclick="setPayoff(1)">Long Put</button>
+      <button class="nav-btn" id="pb2" onclick="setPayoff(2)">Short Call</button>
+      <button class="nav-btn" id="pb3" onclick="setPayoff(3)">Short Put</button>
+    </div>
+    <div class="payoff-wrap">
+      <div class="slider-row"><span>Strike</span><input type="range" id="sl-strike" min="60" max="140" value="100" oninput="drawPayoff()"><span class="slider-val" id="lbl-strike">100</span></div>
+      <div class="slider-row"><span>Premio</span><input type="range" id="sl-prem" min="1" max="30" value="8" oninput="drawPayoff()"><span class="slider-val" id="lbl-prem">8</span></div>
+      <canvas id="payoff-canvas" width="600" height="220" style="width:100%;border-radius:8px;margin-top:8px;"></canvas>
+      <div id="payoff-summary" style="margin-top:10px;font-size:13px;color:var(--color-text-secondary);line-height:1.7;"></div>
+    </div>
+  </div>
+
+  <!-- 4: Strategie -->
+  <div class="screen" id="s4">
+    <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem;">Le strategie combinano più opzioni per profili di rischio specifici. Clicca per espandere.</p>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">📈 Covered Call</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Possiedi il titolo + vendi una call OTM. Incassi il premio come reddito aggiuntivo. Limiti il guadagno massimo ma proteggi parzialmente al ribasso.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">🛡️ Protective Put</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Possiedi il titolo + compri una put. È un'assicurazione: se il titolo crolla, la put limita le perdite. Il costo è il premio pagato.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">⚖️ Bull Call Spread</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Compri una call a strike basso + vendi una call a strike più alto. Costi ridotti, ma anche profitto massimo limitato. Scommessa rialzista moderata.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">⚖️ Bear Put Spread</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Compri una put a strike alto + vendi una put a strike basso. Scommessa ribassista a costo ridotto con profitto massimo limitato.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">🔄 Straddle</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Compri una call ATM + una put ATM con stessa scadenza. Guadagni se il titolo si muove molto in qualsiasi direzione. Paghi doppio premio, quindi hai bisogno di un grande movimento.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">🦋 Butterfly Spread</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Compri 1 call a strike basso + 2 call a strike medio (vendute) + 1 call a strike alto. Massimo profitto se il prezzo resta vicino allo strike centrale a scadenza. Rischio limitato.</div>
+    </div>
+    <div class="strategy-card" onclick="toggleS(this)">
+      <div class="s-header"><span class="s-name">🔢 Iron Condor</span><span class="s-arrow">›</span></div>
+      <div class="s-detail">Combina un bull put spread + un bear call spread. Guadagni se il titolo resta in un range laterale. Ideale per mercati poco volatili.</div>
+    </div>
+  </div>
+
+  <!-- 5: Glossario -->
+  <div class="screen" id="s5">
+    <div class="section-label">I Greci (sensibilità del prezzo)</div>
+    <div class="card"><p class="card-title">Δ Delta</p><p class="card-sub">Variazione del premio per ogni +1€ del sottostante. Va da 0 a 1 per le call, da -1 a 0 per le put. Una call ATM ha delta ≈ 0.5.</p></div>
+    <div class="card"><p class="card-title">Γ Gamma</p><p class="card-sub">Velocità con cui cambia il delta. Massimo vicino alla scadenza e ATM. Alta gamma = opzione molto reattiva.</p></div>
+    <div class="card"><p class="card-title">Θ Theta</p><p class="card-sub">Decadimento temporale. Ogni giorno che passa erode il valore dell'opzione. Il venditore di opzioni beneficia del theta positivo.</p></div>
+    <div class="card"><p class="card-title">ν Vega</p><p class="card-sub">Sensibilità alla volatilità implicita. Se la volatilità aumenta, le opzioni valgono di più (sia call che put).</p></div>
+    <div class="section-label">Altri termini chiave</div>
+    <div class="card"><p class="card-title">Volatilità implicita (IV)</p><p class="card-sub">La volatilità futura "prezzata" dal mercato nell'opzione. Alta IV = opzioni care. Spesso misurata dall'indice VIX.</p></div>
+    <div class="card"><p class="card-title">Open interest</p><p class="card-sub">Numero di contratti aperti (non ancora chiusi o esercitati). Indica la liquidità e l'interesse su uno strike.</p></div>
+    <div class="card"><p class="card-title">Rollover</p><p class="card-sub">Chiudere una posizione in scadenza e aprirne una uguale con scadenza più lontana. Estende la durata della strategia.</p></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+let payoffType = 0;
+
+function go(n) {
+  document.querySelectorAll('.screen').forEach((s,i) => s.classList.toggle('active', i===n));
+  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  if(n===3) setTimeout(drawPayoff, 50);
+}
+
+function setPayoff(n) {
+  payoffType = n;
+  document.querySelectorAll('[id^="pb"]').forEach((b,i) => b.classList.toggle('active', i===n));
+  drawPayoff();
+}
+
+function toggleS(el) { el.classList.toggle('expanded'); }
+
+function drawPayoff() {
+  const canvas = document.getElementById('payoff-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const strike = parseInt(document.getElementById('sl-strike').value);
+  const prem = parseInt(document.getElementById('sl-prem').value);
+  document.getElementById('lbl-strike').textContent = strike;
+  document.getElementById('lbl-prem').textContent = prem;
+
+  ctx.clearRect(0,0,W,H);
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const axisColor = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)';
+  const textColor = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.4)';
+
+  const minP = 40, maxP = 180;
+  const range = maxP - minP;
+  const maxLoss = -prem - 5;
+  const maxGain = payoffType===0 ? maxP - strike - prem + 5 : (payoffType===1 ? strike - minP - prem + 5 : prem + 5);
+  const yMin = Math.min(maxLoss, -prem - 5);
+  const yMax = Math.max(maxGain, prem + 5);
+  const yRange = yMax - yMin;
+
+  const px = p => ((p - minP) / range) * (W - 60) + 30;
+  const py = v => H - 30 - ((v - yMin) / yRange) * (H - 50);
+
+  ctx.strokeStyle = gridColor; ctx.lineWidth = 0.5;
+  for(let v = Math.ceil(yMin/10)*10; v <= yMax; v+=10) {
+    ctx.beginPath(); ctx.moveTo(30, py(v)); ctx.lineTo(W-30, py(v)); ctx.stroke();
+  }
+
+  ctx.strokeStyle = axisColor; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(30, py(0)); ctx.lineTo(W-30, py(0)); ctx.stroke();
+
+  ctx.setLineDash([4,4]); ctx.strokeStyle = axisColor; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(px(strike), 10); ctx.lineTo(px(strike), H-25); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const points = [];
+  for(let p = minP; p <= maxP; p+=1) {
+    let v;
+    if(payoffType===0) v = Math.max(-prem, p - strike - prem);
+    else if(payoffType===1) v = Math.max(-prem, strike - p - prem);
+    else if(payoffType===2) v = Math.min(prem, -(p - strike - prem));
+    else v = Math.min(prem, -(strike - p - prem));
+    points.push([px(p), py(v), v]);
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], py(0));
+  points.forEach(([x,y,v]) => { if(v>=0) ctx.lineTo(x,y); else ctx.lineTo(x,py(0)); });
+  ctx.closePath();
+  ctx.fillStyle = isDark ? 'rgba(100,180,80,0.12)' : 'rgba(80,160,50,0.10)';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], py(0));
+  points.forEach(([x,y,v]) => { if(v<=0) ctx.lineTo(x,y); else ctx.lineTo(x,py(0)); });
+  ctx.closePath();
+  ctx.fillStyle = isDark ? 'rgba(220,80,70,0.12)' : 'rgba(200,60,60,0.10)';
+  ctx.fill();
+
+  ctx.beginPath();
+  points.forEach(([x,y],i) => i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+  ctx.strokeStyle = payoffType<=1 ? '#3B8BD4' : '#D85A30';
+  ctx.lineWidth = 2; ctx.stroke();
+
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'right';
+  for(let v = Math.ceil(yMin/10)*10; v <= yMax; v+=10) {
+    if(Math.abs(v)>1) ctx.fillText(v, 26, py(v)+4);
+  }
+  ctx.textAlign = 'center';
+  ctx.fillText('Strike '+strike, px(strike), H-8);
+
+  let be;
+  if(payoffType===0) be = strike + prem;
+  else if(payoffType===1) be = strike - prem;
+  else if(payoffType===2) be = strike + prem;
+  else be = strike - prem;
+  if(be >= minP && be <= maxP) {
+    ctx.beginPath(); ctx.arc(px(be), py(0), 4, 0, Math.PI*2);
+    ctx.fillStyle = isDark?'#aaa':'#555'; ctx.fill();
+    ctx.fillStyle = textColor; ctx.textAlign = 'center';
+    ctx.fillText('BE '+be, px(be), py(0)-8);
+  }
+
+  const summaries = [
+    `Guadagno illimitato se il titolo sale oltre ${strike+prem}. Perdita massima: ${prem} (il premio pagato).`,
+    `Guadagno se il titolo scende sotto ${strike-prem}. Perdita massima: ${prem} (il premio pagato).`,
+    `Incassi ${prem} di premio. Perdi se il titolo supera ${strike+prem}. Rischio teoricamente illimitato.`,
+    `Incassi ${prem} di premio. Perdi se il titolo scende sotto ${strike-prem}. Rischio elevato al ribasso.`
+  ];
+  document.getElementById('payoff-summary').textContent = summaries[payoffType];
+}
+
+window.addEventListener('load', () => { drawPayoff(); });
+</script>
+</body>
+</html>
