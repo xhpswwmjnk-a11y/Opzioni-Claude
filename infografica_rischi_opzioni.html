@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Rischi principiante opzioni</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f1f5f9;color:#111;padding:16px;max-width:680px;margin:0 auto}
+.header{text-align:center;margin-bottom:20px}
+.header h1{font-size:18px;font-weight:700;color:#111;margin-bottom:5px}
+.header p{font-size:12px;color:#6b7280}
+.section-label{font-size:10px;font-weight:700;color:#9ca3af;text-align:center;letter-spacing:.07em;padding:10px 0 7px;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+.card{border-radius:12px;padding:14px;cursor:pointer;transition:opacity .15s;border:1px solid transparent}
+.card:hover{opacity:.85}
+.card-num{font-size:10px;font-weight:700;margin-bottom:5px;opacity:.75}
+.card-title{font-size:13px;font-weight:700;margin-bottom:5px}
+.card-body{font-size:12px;line-height:1.55}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:8px}
+.cr{background:#FCEBEB;border-color:#F09595}
+.cr .card-num{color:#791F1F}.cr .card-title{color:#501313}.cr .card-body{color:#791F1F}.cr .pill{background:#F7C1C1;color:#501313}
+.ca{background:#FAEEDA;border-color:#EF9F27}
+.ca .card-num{color:#633806}.ca .card-title{color:#412402}.ca .card-body{color:#633806}.ca .pill{background:#FAC775;color:#412402}
+.ct{background:#E1F5EE;border-color:#5DCAA5}
+.ct .card-num{color:#085041}.ct .card-title{color:#04342C}.ct .card-body{color:#085041}.ct .pill{background:#9FE1CB;color:#04342C}
+.detail{border-radius:10px;padding:12px 14px;margin:4px 0 8px;display:none;background:#fff;border:1px solid #e2e8f0}
+.detail.open{display:block}
+.detail-title{font-size:12px;font-weight:700;color:#111;margin-bottom:5px}
+.detail-body{font-size:12px;color:#374151;line-height:1.6}
+.close-btn{font-size:11px;color:#9ca3af;margin-top:8px;cursor:pointer;display:inline-block}
+.rules{background:#EAF3DE;border:1px solid #97C459;border-radius:12px;padding:14px 16px;margin-top:12px}
+.rules h3{font-size:13px;font-weight:700;color:#173404;margin-bottom:10px}
+.rule{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid #C0DD97}
+.rule:last-child{border-bottom:none}
+.rule-n{width:22px;height:22px;border-radius:50%;background:#C0DD97;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:#173404}
+.rule-t{font-size:12px;color:#27500A;line-height:1.45;flex:1}
+.rule-t strong{color:#173404}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Cosa distrugge i principianti nelle opzioni</h1>
+  <p>Clicca ogni card per capire il perché — dalla più pericolosa alla più gestibile</p>
+</div>
+
+<div class="section-label">Pericoli critici — eliminano il conto</div>
+<div class="grid">
+  <div class="card cr" onclick="tog('d1')">
+    <div class="card-num">Rischio n.1</div>
+    <div class="card-title">Sizing eccessivo</div>
+    <div class="card-body">Metti troppo capitale su un trade. Tre perdite consecutive e sei fuori psicologicamente.</div>
+    <div class="pill">Regola: max 2% per trade</div>
+  </div>
+  <div class="card cr" onclick="tog('d2')">
+    <div class="card-num">Rischio n.2</div>
+    <div class="card-title">Opzioni vicino agli earnings</div>
+    <div class="card-body">La IV crolla del 30–50% dopo gli utili anche se il titolo non si muove molto.</div>
+    <div class="pill">Regola: no earnings entro 14gg</div>
+  </div>
+</div>
+<div id="d1" class="detail">
+  <div class="detail-title">Perché il sizing eccessivo è il rischio n.1</div>
+  <div class="detail-body">Con sizing al 2% puoi perdere 10 volte di fila e perdi solo il 20% del conto. Con sizing al 10%, bastano 3 perdite per dimezzare tutto. La prima perdita grossa cambia il comportamento: inizi a fare trade di recupero, a non rispettare le regole. Il sizing è la differenza tra chi impara e chi smette.</div>
+  <span class="close-btn" onclick="tog('d1')">chiudi ↑</span>
+</div>
+<div id="d2" class="detail">
+  <div class="detail-title">Perché gli earnings sono una trappola</div>
+  <div class="detail-body">Prima degli earnings la IV si gonfia artificialmente — i premi sembrano altissimi. Dopo la pubblicazione la IV collassa immediatamente, indipendentemente dalla direzione del titolo. Se hai venduto una put puoi ritrovarti in perdita anche se il titolo è salito. Aspetta sempre che gli earnings passino.</div>
+  <span class="close-btn" onclick="tog('d2')">chiudi ↑</span>
+</div>
+
+<div class="grid" style="margin-top:8px">
+  <div class="card cr" onclick="tog('d3')">
+    <div class="card-num">Rischio n.3</div>
+    <div class="card-title">Nessun sell stop</div>
+    <div class="card-body">Un gap overnight può aprire il 15% sotto. Senza protezione la perdita è illimitata.</div>
+    <div class="pill">Regola: sell stop sempre attivo</div>
+  </div>
+  <div class="card ca" onclick="tog('d4')">
+    <div class="card-num">Rischio n.4</div>
+    <div class="card-title">Ignorare la regola 80%</div>
+    <div class="card-body">Hai l'80% del profitto ma aspetti il 100%. Stai rischiando $350 per guadagnare altri $70.</div>
+    <div class="pill">Regola: chiudi all'80%, sempre</div>
+  </div>
+</div>
+<div id="d3" class="detail">
+  <div class="detail-title">Il sell stop non è perfetto — ma è obbligatorio</div>
+  <div class="detail-body">Il sell stop non protegge dai gap overnight: se un titolo apre il 15% sotto dopo una notizia notturna, lo stop viene eseguito al prezzo di apertura, non allo strike. Ma non avere nessuno stop è molto peggio. Piazza sempre il sell stop allo strike della put venduta, contestualmente all'apertura — mai dopo.</div>
+  <span class="close-btn" onclick="tog('d3')">chiudi ↑</span>
+</div>
+<div id="d4" class="detail">
+  <div class="detail-title">La matematica della regola 80%</div>
+  <div class="detail-body">Esempio: hai venduto una put incassando $350. Dopo 15 giorni hai $280 di profitto (80%). Il rischio residuo per guadagnare altri $70 è lo stesso di quando hai aperto — una mossa avversa può azzerare tutto. Il rapporto rischio/rendimento si è capovolto. Chiudi. Cerca il prossimo trade.</div>
+  <span class="close-btn" onclick="tog('d4')">chiudi ↑</span>
+</div>
+
+<div class="section-label" style="margin-top:10px">Errori operativi — rallentano l'apprendimento</div>
+<div class="grid">
+  <div class="card ca" onclick="tog('d5')">
+    <div class="card-num">Errore n.5</div>
+    <div class="card-title">Strike troppo vicini</div>
+    <div class="card-body">Premi più alti sembrano migliori. Ma stai aumentando il rischio in modo sproporzionato.</div>
+    <div class="pill">Regola: delta ≤ 0.20 sempre</div>
+  </div>
+  <div class="card ca" onclick="tog('d6')">
+    <div class="card-num">Errore n.6</div>
+    <div class="card-title">Troppe posizioni aperte</div>
+    <div class="card-body">Con 5 posizioni non monitori tutto. Dimentichi uno stop, perdi una scadenza.</div>
+    <div class="pill">Regola: max 2 trade contemporanei</div>
+  </div>
+</div>
+<div id="d5" class="detail">
+  <div class="detail-title">Perché il delta ≤ 0.20 è la soglia giusta</div>
+  <div class="detail-body">Delta 0.20 significa circa 20% di probabilità che l'opzione finisca ITM — ovvero 80% di probabilità che scada senza valore. Con delta 0.30 hai solo il 70% di probabilità, ma il premio aggiuntivo non compensa questo calo. Per un principiante la disciplina sul delta è la regola più importante dopo il sizing.</div>
+  <span class="close-btn" onclick="tog('d5')">chiudi ↑</span>
+</div>
+<div id="d6" class="detail">
+  <div class="detail-title">La complessità aumenta gli errori operativi</div>
+  <div class="detail-body">Con 5 posizioni aperte la gestione diventa un lavoro a tempo pieno. Inizi a fare trade in fretta, a dimenticare i livelli di stop, a non monitorare correttamente. Inizia con uno o due trade alla volta. La semplicità è un vantaggio, non una limitazione.</div>
+  <span class="close-btn" onclick="tog('d6')">chiudi ↑</span>
+</div>
+
+<div class="grid" style="margin-top:8px">
+  <div class="card ct" onclick="tog('d7')">
+    <div class="card-num">Errore n.7</div>
+    <div class="card-title">Cambiare strategia dopo una perdita</div>
+    <div class="card-body">Perdi e cambi tutto. Non raccogli mai abbastanza dati per capire se il sistema funziona.</div>
+    <div class="pill">Regola: una strategia, 50 trade, poi valuta</div>
+  </div>
+  <div class="card ct" onclick="tog('d8')">
+    <div class="card-num">Principio</div>
+    <div class="card-title">Log post-trade obbligatorio</div>
+    <div class="card-body">Senza log non sai cosa funziona. Ogni trade senza nota è esperienza sprecata.</div>
+    <div class="pill">Regola: registra tutto, incluse le perdite</div>
+  </div>
+</div>
+<div id="d7" class="detail">
+  <div class="detail-title">Perché cambiare strategia è l'errore più sottile</div>
+  <div class="detail-body">Una sell put con le regole giuste ha circa 75–80% di win rate. Ma in una sequenza casuale di 10 trade ci sono 2–3 perdite normali. Se cambi dopo ogni perdita non completi mai abbastanza trade per vedere se il sistema funziona. Servono 30–50 trade con le stesse regole per avere dati significativi.</div>
+  <span class="close-btn" onclick="tog('d7')">chiudi ↑</span>
+</div>
+<div id="d8" class="detail">
+  <div class="detail-title">Cosa registrare nel log</div>
+  <div class="detail-body">Per ogni trade: ticker, strike, DTE, IV rank, delta, premio incassato, data apertura e chiusura, P&L finale, motivo chiusura, confronto con SPY. Per le perdite: quale filtro mancava, cosa avresti fatto diversamente. Il log costruisce il tuo edge personale nel tempo.</div>
+  <span class="close-btn" onclick="tog('d8')">chiudi ↑</span>
+</div>
+
+<div class="rules">
+  <h3>Le 5 regole da non violare mai</h3>
+  <div class="rule"><div class="rule-n">1</div><div class="rule-t"><strong>Max 2% del capitale</strong> per trade singolo — sempre, senza eccezioni</div></div>
+  <div class="rule"><div class="rule-n">2</div><div class="rule-t"><strong>Delta ≤ 0.20</strong> — nessuno strike più vicino al prezzo corrente</div></div>
+  <div class="rule"><div class="rule-n">3</div><div class="rule-t"><strong>No earnings entro 14 giorni</strong> dalla scadenza scelta</div></div>
+  <div class="rule"><div class="rule-n">4</div><div class="rule-t"><strong>Sell stop piazzato contestualmente</strong> — mai aprire senza protezione</div></div>
+  <div class="rule"><div class="rule-n">5</div><div class="rule-t"><strong>Chiudi all'80% del premio</strong> — il cervello vuole il 100%, tu chiudi all'80%</div></div>
+</div>
+
+<script>
+function tog(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const open=el.classList.contains('open');
+  document.querySelectorAll('.detail').forEach(d=>d.classList.remove('open'));
+  if(!open)el.classList.add('open');
+}
+</script>
+</body>
+</html>
