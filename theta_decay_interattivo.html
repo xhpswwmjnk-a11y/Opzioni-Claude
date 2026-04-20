@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theta Decay — Decadimento Temporale delle Opzioni</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --font-sans: system-ui, -apple-system, sans-serif;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f4f0;
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #888780;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.22);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a27;
+      --color-text-primary: #e8e6de;
+      --color-text-secondary: #9c9a92;
+      --color-text-tertiary: #6e6c66;
+      --color-border-tertiary: rgba(255,255,255,0.10);
+      --color-border-secondary: rgba(255,255,255,0.20);
+    }
+  }
+  body {
+    margin: 0;
+    padding: 2rem 1.5rem;
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 0.25rem; }
+  .subtitle { font-size: 14px; color: var(--color-text-secondary); margin: 0 0 1.75rem; }
+  .container { max-width: 720px; margin: 0 auto; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric-value { font-size: 24px; font-weight: 500; color: var(--color-text-primary); }
+  .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--color-text-secondary); }
+  .control-row input[type=range] { flex: 1; }
+  .control-row select { flex: 1; font-size: 13px; font-family: var(--font-sans); padding: 6px 8px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .ctrl-val { min-width: 48px; text-align: right; font-weight: 500; color: var(--color-text-primary); }
+  .chart-wrap { position: relative; width: 100%; height: 280px; margin-bottom: 8px; }
+  .legend { display: flex; gap: 20px; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 1rem; }
+  .legend-line { width: 20px; height: 2px; display: inline-block; vertical-align: middle; margin-right: 5px; }
+  .insight { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Theta decay</h1>
+  <p class="subtitle">Come il valore temporale di un'opzione si erode avvicinandosi alla scadenza</p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Valore residuo</div>
+      <div class="metric-value" id="metric-val">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Theta giornaliero</div>
+      <div class="metric-value" id="metric-theta">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">% perso</div>
+      <div class="metric-value" id="metric-pct">—</div>
+    </div>
+  </div>
+
+  <div class="control-row">
+    <span>Premio iniziale</span>
+    <input type="range" id="sl-prem" min="2" max="30" value="10" step="1" oninput="update()">
+    <span class="ctrl-val" id="lbl-prem">$10</span>
+  </div>
+  <div class="control-row" style="margin-bottom:1.25rem;">
+    <span>Moneyness</span>
+    <select id="sl-mono" onchange="update()">
+      <option value="atm">ATM — decadimento più rapido</option>
+      <option value="otm">OTM — decadimento inizialmente lento</option>
+      <option value="itm">ITM — decadimento moderato</option>
+    </select>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="tc" role="img" aria-label="Curva del theta decay: valore temporale dell'opzione nei 30 giorni prima della scadenza.">Il valore temporale dell'opzione si azzera progressivamente avvicinandosi alla scadenza.</canvas>
+  </div>
+
+  <div class="legend">
+    <span><span class="legend-line" style="background:#3B8BD4;"></span> Valore residuo</span>
+    <span><span class="legend-line" style="background:#E24B4A;border-top:2px dashed #E24B4A;"></span> Valore perso</span>
+  </div>
+
+  <div class="insight" id="insight-box"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let chart;
+
+function thetaCurve(days, prem, mono) {
+  const vals = [];
+  for(let d = 30; d >= 0; d--) {
+    const t = d / 30;
+    let v;
+    if(mono === 'atm') {
+      v = prem * Math.pow(t, 0.5);
+    } else if(mono === 'otm') {
+      v = prem * Math.pow(t, 0.35);
+    } else {
+      v = prem * (0.35 + 0.65 * Math.pow(t, 0.6));
+    }
+    vals.push(Math.max(0, parseFloat(v.toFixed(2))));
+  }
+  return vals;
+}
+
+function update() {
+  const prem = parseInt(document.getElementById('sl-prem').value);
+  const mono = document.getElementById('sl-mono').value;
+  document.getElementById('lbl-prem').textContent = '$' + prem;
+
+  const days = Array.from({length: 31}, (_, i) => 30 - i);
+  const vals = thetaCurve(30, prem, mono);
+  const lost = vals.map(v => parseFloat((prem - v).toFixed(2)));
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridC = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const tickC = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
+
+  const cfg = {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [
+        {
+          label: 'Valore residuo',
+          data: vals,
+          borderColor: '#3B8BD4',
+          backgroundColor: isDark ? 'rgba(59,139,212,0.08)' : 'rgba(59,139,212,0.07)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 2,
+          order: 1
+        },
+        {
+          label: 'Valore perso',
+          data: lost,
+          borderColor: '#E24B4A',
+          borderDash: [5, 4],
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5,
+          order: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => 'Giorni alla scadenza: ' + ctx[0].label,
+            label: ctx => ctx.dataset.label + ': $' + ctx.parsed.y.toFixed(2)
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Giorni alla scadenza', color: tickC, font: { size: 11 } },
+          ticks: { color: tickC, font: { size: 11 }, maxTicksLimit: 7, autoSkip: true },
+          grid: { color: gridC }
+        },
+        y: {
+          min: 0,
+          max: parseFloat((prem * 1.05).toFixed(2)),
+          title: { display: true, text: 'Valore ($)', color: tickC, font: { size: 11 } },
+          ticks: { color: tickC, font: { size: 11 }, callback: v => '$' + v },
+          grid: { color: gridC }
+        }
+      }
+    }
+  };
+
+  if(chart) { chart.destroy(); }
+  chart = new Chart(document.getElementById('tc'), cfg);
+
+  const day15val = vals[15];
+  const day7val  = vals[23];
+  const thetaToday = parseFloat((vals[0] - vals[1]).toFixed(2));
+  const pctLost = Math.round((lost[30] / prem) * 100);
+
+  document.getElementById('metric-val').textContent   = '$' + vals[29].toFixed(2);
+  document.getElementById('metric-theta').textContent = '-$' + thetaToday;
+  document.getElementById('metric-pct').textContent   = pctLost + '%';
+
+  const insightMap = {
+    atm: `Un'opzione ATM perde valore molto rapidamente nelle ultime due settimane. A 15 giorni dalla scadenza vale già solo $${day15val.toFixed(2)} su $${prem}. A 7 giorni vale $${day7val.toFixed(2)}. L'accelerazione del decadimento è la trappola principale per chi compra opzioni vicino alla scadenza.`,
+    otm: `Un'opzione OTM ha un valore temporale basso fin dall'inizio. Il decadimento è inizialmente lento, poi si azzera rapidamente nell'ultima settimana. A 7 giorni vale solo $${day7val.toFixed(2)}. Spesso usata da chi specula su movimenti rapidi, ma è la più probabile da perdere completamente.`,
+    itm: `Un'opzione ITM ha sia valore intrinseco che temporale. Il theta erode solo la componente temporale, quindi non azzera mai completamente il valore prima della scadenza — rimane il valore intrinseco. A 7 giorni il premio è ancora circa $${day7val.toFixed(2)}.`
+  };
+  document.getElementById('insight-box').textContent = insightMap[mono];
+}
+
+window.addEventListener('load', update);
+</script>
+</body>
+</html>
