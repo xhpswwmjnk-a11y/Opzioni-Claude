@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options Trade Flow — Index Options</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0e0e10;--bg2:#17171a;--bg3:#1f1f24;--bg4:#27272d;
+--bdr:rgba(255,255,255,0.08);--bdr2:rgba(255,255,255,0.15);
+--txt:#e8e6de;--txt2:#9c9a92;--txt3:#5f5e5a;
+--acc:#c0420a;--green:#22a050;--red:#d44040;--purple:#7F77DD;--amber:#EF9F27;--blue:#378ADD;
+}
+body{font-family:'SF Pro Display',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:0}
+.app{max-width:680px;margin:0 auto;padding:20px 16px}
+.tabs{display:flex;gap:1px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:16px}
+.tab{flex:1;text-align:center;padding:7px 2px;font-size:11px;border-radius:7px;border:none;background:transparent;color:var(--txt2);cursor:pointer;font-family:inherit;transition:all .15s}
+.tab.on{background:var(--bg4);color:var(--txt);font-weight:500}
+.panel{display:none}.panel.on{display:block}
+.slabel{font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--txt3);text-transform:uppercase;margin-bottom:8px}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:12px;margin-bottom:10px}
+.card-accent{border-left:3px solid var(--acc);border-radius:0 10px 10px 0}
+.card-green{border-left:3px solid var(--green);border-radius:0 10px 10px 0}
+.card-red{border-left:3px solid var(--red);border-radius:0 10px 10px 0}
+.card-amber{border-left:3px solid var(--amber);border-radius:0 10px 10px 0}
+.card-blue{border-left:3px solid var(--blue);border-radius:0 10px 10px 0}
+.card-purple{border-left:3px solid var(--purple);border-radius:0 10px 10px 0}
+.ctitle{font-size:12px;font-weight:500;color:var(--txt);margin-bottom:5px}
+.cbody{font-size:11px;color:var(--txt2);line-height:1.7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.metric{background:var(--bg3);border-radius:8px;padding:10px}
+.mlbl{font-size:9px;color:var(--txt3);margin-bottom:3px}
+.mval{font-size:16px;font-weight:500}
+.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}.purple{color:var(--purple)}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:5px;margin-right:4px}
+.badge-green{background:rgba(34,160,80,0.15);color:#22a050}
+.badge-red{background:rgba(212,64,64,0.15);color:#d44040}
+.badge-amber{background:rgba(239,159,39,0.15);color:#EF9F27}
+.badge-blue{background:rgba(55,138,221,0.15);color:#378ADD}
+.badge-purple{background:rgba(127,119,221,0.15);color:#7F77DD}
+.badge-gray{background:rgba(136,135,128,0.15);color:#888780}
+.step{display:flex;gap:10px;margin-bottom:10px}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-title{font-size:12px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.step-text{font-size:11px;color:var(--txt2);line-height:1.65}
+.check-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.check-row:last-child{border-bottom:none}
+.check-box{width:16px;height:16px;border-radius:4px;border:1px solid var(--bdr2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.check-box.checked{background:var(--green);border-color:var(--green)}
+.check-tick{width:8px;height:8px;display:none}
+.check-box.checked .check-tick{display:block}
+.check-label{font-size:11px;color:var(--txt2);flex:1;cursor:pointer}
+.check-row.checked .check-label{color:var(--txt3);text-decoration:line-through}
+.check-tag{font-size:9px;padding:1px 6px;border-radius:4px;flex-shrink:0}
+.progress-bar{height:4px;background:var(--bg4);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.progress-label{font-size:10px;color:var(--txt3);margin-bottom:4px;display:flex;justify-content:space-between}
+.case-btn{padding:6px 10px;border-radius:7px;border:1px solid var(--bdr);background:transparent;color:var(--txt2);cursor:pointer;font-size:10px;font-family:inherit;margin-right:6px;margin-bottom:6px;transition:all .15s}
+.case-btn.on{border-color:var(--acc);color:var(--txt);background:rgba(192,66,10,0.1)}
+.divider{height:1px;background:var(--bdr);margin:12px 0}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px}
+.cw{position:relative;width:100%;height:160px;margin-bottom:8px}
+.ask-btn{width:100%;margin-top:10px;padding:9px;font-size:11px;border:1px solid var(--bdr2);border-radius:8px;background:transparent;color:var(--txt2);cursor:pointer;font-family:inherit;transition:all .15s}
+.ask-btn:hover{background:var(--bg3);color:var(--txt)}
+.exit-rule{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.exit-rule:last-child{border-bottom:none}
+.exit-icon{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+  <div style="font-size:14px;font-weight:500">Trade Flow — Index Options</div>
+  <div style="font-size:10px;color:var(--txt3)"><span class="live-dot"></span>Data ref. 21 Apr 2026</div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" id="tab0" onclick="goTab(0)">Market</button>
+  <button class="tab" id="tab1" onclick="goTab(1)">Pre-trade</button>
+  <button class="tab" id="tab2" onclick="goTab(2)">Entry</button>
+  <button class="tab" id="tab3" onclick="goTab(3)">Management</button>
+  <button class="tab" id="tab4" onclick="goTab(4)">Case studies</button>
+</div>
+
+<!-- TAB 0 -->
+<div class="panel on" id="p0">
+  <div class="slabel">Market context — 21 Apr 2026</div>
+  <div class="grid4">
+    <div class="metric"><div class="mlbl">SPY</div><div class="mval amber">$709.49</div></div>
+    <div class="metric"><div class="mlbl">QQQ</div><div class="mval amber">$646.79</div></div>
+    <div class="metric"><div class="mlbl">VIX</div><div class="mval" style="color:#EF9F27">~19.9</div></div>
+    <div class="metric"><div class="mlbl">VIX prev.</div><div class="mval green">17.48</div></div>
+  </div>
+  <div class="card card-amber">
+    <div class="ctitle">VIX reading — cosa significa per te come compratore</div>
+    <div class="cbody">VIX a ~20 è in zona "moderata". Storicamente: sotto 15 = opzioni economiche (ideale per comprare), 15–25 = zona neutra, sopra 30 = opzioni care (attenzione al premio). Oggi il VIX è salito da 17.48 a ~20 (+14%) — il mercato sta prezzando più incertezza. Per un compratore di call/put questo significa premi leggermente più cari rispetto a ieri.</div>
+  </div>
+  <div class="slabel" style="margin-top:4px">VIX regime — dove siamo oggi</div>
+  <div style="position:relative;width:100%;height:36px;margin-bottom:14px">
+    <div style="display:flex;height:12px;border-radius:6px;overflow:hidden">
+      <div style="flex:2;background:rgba(34,160,80,0.35)"></div>
+      <div style="flex:2;background:rgba(239,159,39,0.35)"></div>
+      <div style="flex:2;background:rgba(212,64,64,0.35)"></div>
+      <div style="flex:1;background:rgba(154,32,32,0.45)"></div>
+    </div>
+    <div style="display:flex;font-size:9px;color:var(--txt3);margin-top:3px;justify-content:space-between"><span>0</span><span>15</span><span>25</span><span>35</span><span>50+</span></div>
+    <div style="position:absolute;top:0;left:calc(20/50*100% - 6px);width:12px;height:12px;border-radius:50%;background:var(--amber);border:2px solid var(--bg)"></div>
+    <div style="position:absolute;top:16px;left:calc(20/50*100% - 12px);font-size:9px;color:var(--amber);font-weight:500">VIX ~20</div>
+  </div>
+  <div class="grid2">
+    <div class="card card-blue">
+      <div class="ctitle">QQQ — contesto tecnico</div>
+      <div class="cbody">Dopo 10 sedute consecutive al rialzo (+10.9%), QQQ ha toccato un nuovo all-time high a $650. Ora a $646.79 con segnali di possibile consolidamento. Supporto chiave a $627 e $600. Bull in controllo ma momentum rallenta.</div>
+    </div>
+    <div class="card card-red">
+      <div class="ctitle">SPY — segnali d'attenzione</div>
+      <div class="cbody">SPY a $709.49. Il bull ratio è crollato da 5.4:1 a 1.36:1. I bear sono raddoppiati. Max Pain e Flip convergono a 701 — una "magnet zone". Incertezza geopolitica (Iran) pesa sul sentiment.</div>
+    </div>
+  </div>
+  <div class="card card-green">
+    <div class="ctitle">Contesto macro da sapere</div>
+    <div class="cbody">Q1 earnings season in corso. Iran/US negoziati in stallo → volatilità geopolitica. CPI marzo sopra attese (3.4% YoY). Questo contesto suggerisce cautela prima di aprire posizioni direzionali forti.</div>
+  </div>
+</div>
+
+<!-- TAB 1 -->
+<div class="panel" id="p1">
+  <div class="slabel">Pre-trade checklist — completa prima di ogni trade</div>
+  <div class="progress-label"><span id="prog-lbl">0 / 12 completati</span><span id="prog-pct">0%</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="card card-blue"><div class="ctitle">A — Bias direzionale</div><div id="checks-A"></div></div>
+  <div class="card card-amber"><div class="ctitle">B — Volatilità e premio</div><div id="checks-B"></div></div>
+  <div class="card card-green"><div class="ctitle">C — Timing e scadenza</div><div id="checks-C"></div></div>
+  <div class="card card-red"><div class="ctitle">D — Risk management</div><div id="checks-D"></div></div>
+  <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:8px;font-size:11px;color:var(--txt2)" id="checklist-verdict">Completa la checklist per ricevere un verdetto.</div>
+</div>
+
+<!-- TAB 2 -->
+<div class="panel" id="p2">
+  <div class="slabel">Flusso di entrata — passo dopo passo</div>
+  <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Scegli il sottostante e verifica la liquidità</div><div class="step-text">SPY e QQQ sono i più liquidi al mondo. Controlla sempre bid-ask spread: deve essere stretto (ideale &lt;$0.05 per opzioni ATM su SPY/QQQ). Evita opzioni con spread &gt;$0.10 — paghi un costo nascosto enorme.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Scegli strike e moneyness</div><div class="step-text">Come compratore: ATM massimizza il delta (0.50) ma costa di più. OTM costa meno ma richiede un movimento maggiore per profittare. Per trade direzionale forte → ATM o leggermente OTM. Per speculazione a basso costo → OTM, ma accetta che scada a zero più spesso.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Scegli la scadenza (DTE — Days to Expiry)</div><div class="step-text">Regola d'oro per compratori: usa opzioni con almeno 30–45 DTE per evitare il theta decay aggressivo. Opzioni con &lt;7 DTE sono estremamente pericolose per i compratori. Ideale per swing trade: 30–60 DTE.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Calcola il costo reale e il break-even</div><div class="step-text">Premio × 100 = costo per contratto. Break-even = Strike + Premio (call) o Strike − Premio (put). Chiediti: il sottostante può raggiungere il break-even prima della scadenza in modo realistico?</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Definisci size e rischio massimo</div><div class="step-text">Non rischiare più del 1–3% del portafoglio per singolo trade. Esempio: portafoglio da $50,000 → rischio max $500–1,500 per trade. Se un contratto costa $400 di premio, puoi comprare 1–3 contratti massimo.</div></div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Imposta gli ordini prima di premere "buy"</div><div class="step-text">Usa sempre limit order, mai market order sulle opzioni. Inserisci il prezzo al midpoint del bid-ask. Imposta subito un alert per il tuo stop loss (-50% sul premio) e il tuo target (+100% o +150%).</div></div></div>
+  <div class="divider"></div>
+  <div class="slabel">Esempio reale — QQQ call oggi</div>
+  <div class="card card-blue">
+    <div class="ctitle">Trade esempio: QQQ long call, strike $660, scadenza 30 giorni</div>
+    <div class="cbody" style="line-height:2">
+      QQQ spot: <span style="color:var(--txt);font-weight:500">$646.79</span><br>
+      Strike scelto: <span style="color:var(--txt);font-weight:500">$660 (OTM +2%)</span><br>
+      DTE: <span style="color:var(--txt);font-weight:500">30 giorni</span><br>
+      Premio stimato: <span style="color:var(--txt);font-weight:500">~$8.50 → $850 per contratto</span><br>
+      Break-even a scadenza: <span style="color:var(--amber);font-weight:500">$668.50</span> (+3.4% da oggi)<br>
+      Stop loss: <span style="color:var(--red);font-weight:500">-50% sul premio → $425 per contratto</span><br>
+      Target: <span style="color:var(--green);font-weight:500">+100% → $1,700 per contratto</span>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 -->
+<div class="panel" id="p3">
+  <div class="slabel">Gestione della posizione aperta</div>
+  <div class="card card-green">
+    <div class="ctitle">Monitoraggio giornaliero — cosa guardare</div>
+    <div class="cbody">
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--blue)"></div><div><strong style="color:var(--txt)">Delta:</strong> Se il delta sale oltre 0.80, considera di prendere profitto parziale — l'opzione si comporta come il sottostante e hai meno leva.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--amber)"></div><div><strong style="color:var(--txt)">Theta:</strong> Ogni giorno perdi valore temporale. Negli ultimi 7 giorni il decay accelera drasticamente — non tenere opzioni OTM nell'ultima settimana.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--purple)"></div><div><strong style="color:var(--txt)">Vega/IV:</strong> Se il VIX scende dopo l'acquisto, le tue opzioni perdono valore anche se il prezzo del sottostante non si muove — è il "vol crush". Attenzione post-earnings.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--green)"></div><div><strong style="color:var(--txt)">P&L %:</strong> Controlla il P&L percentuale, non assoluto. Una perdita del -30% su un'opzione è molto diversa da una perdita del -30% su un'azione.</div></div>
+    </div>
+  </div>
+  <div class="slabel">Regole di uscita — quando chiudere</div>
+  <div class="card card-red">
+    <div class="ctitle">Stop loss — uscita obbligatoria</div>
+    <div class="cbody">
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--red)"></div><div>Premio perso &gt;50%: chiudi senza esitare. Non aspettare un "rimbalzo" — le opzioni OTM in perdita raramente recuperano prima della scadenza.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--red)"></div><div>Rimangono &lt;7 giorni alla scadenza e sei ancora OTM: chiudi per recuperare il residuo di valore temporale.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--red)"></div><div>Il bias direzionale cambia (notizie macro negative inattese): esci anche in perdita. Non sposarti con il trade.</div></div>
+    </div>
+  </div>
+  <div class="card card-green">
+    <div class="ctitle">Take profit — quando incassare</div>
+    <div class="cbody">
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--green)"></div><div>+50% sul premio: considera di chiudere metà posizione per assicurare profitto. Lascia il resto correre con stop al break-even.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--green)"></div><div>+100% sul premio: chiudi almeno i 2/3. Il rischio/rendimento residuo si deteriora rapidamente dopo questo punto.</div></div>
+      <div class="exit-rule"><div class="exit-icon" style="background:var(--green)"></div><div>Prima di un evento macro importante (FOMC, earnings): valuta di chiudere. Il vol crush post-evento può azzerare i guadagni.</div></div>
+    </div>
+  </div>
+  <div class="slabel">VIX decision matrix — vantaggio compratore vs costo premio</div>
+  <div class="cw"><canvas id="vix-chart" role="img" aria-label="VIX decision matrix">Strategia per compratori in base al VIX.</canvas></div>
+  <div style="display:flex;gap:16px;font-size:10px;color:var(--txt2);margin-bottom:8px">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(34,160,80,0.6)"></span>Vantaggio compratore</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(212,64,64,0.4)"></span>Costo premio (rel.)</span>
+  </div>
+</div>
+
+<!-- TAB 4 -->
+<div class="panel" id="p4">
+  <div class="slabel">Casi reali documentati — impara dagli esempi</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="case-btns"></div>
+  <div id="case-content"></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var CHECKS={
+  A:[
+    {t:'Ho identificato un trend chiaro (rialzista o ribassista)?',tag:'Tecnica',tagc:'badge-blue'},
+    {t:'Ho controllato la media mobile a 20 e 50 giorni?',tag:'Tecnica',tagc:'badge-blue'},
+    {t:'RSI sopra 50 (call) o sotto 50 (put)?',tag:'Momentum',tagc:'badge-purple'},
+    {t:'Ho un catalizzatore (earnings, macro, news)?',tag:'Catalizzatore',tagc:'badge-amber'}
+  ],
+  B:[
+    {t:'Ho controllato il livello di VIX oggi?',tag:'VIX',tagc:'badge-amber'},
+    {t:'VIX < 20? (ideale per comprare opzioni)',tag:'Premium',tagc:'badge-green'},
+    {t:'Ho comparato la IV attuale con la IV storica a 30g?',tag:'IV Rank',tagc:'badge-amber'},
+    {t:'Il bid-ask spread è accettabile (<$0.10 ATM)?',tag:'Liquidità',tagc:'badge-blue'}
+  ],
+  C:[
+    {t:'Ho scelto una scadenza con almeno 30 DTE?',tag:'Theta',tagc:'badge-red'},
+    {t:'Non ci sono earnings entro la scadenza scelta?',tag:'Evento',tagc:'badge-amber'}
+  ],
+  D:[
+    {t:'Il costo del trade è <2% del mio portafoglio?',tag:'Size',tagc:'badge-red'},
+    {t:'Ho definito stop loss (-50%) e target (+100%) in anticipo?',tag:'Piano',tagc:'badge-red'}
+  ]
+};
+
+var checked={};
+var totalChecks=0;
+var vixChartDrawn=false;
+
+function buildChecklist(){
+  var groups=['A','B','C','D'];
+  totalChecks=0;
+  groups.forEach(function(g){
+    var container=document.getElementById('checks-'+g);
+    container.innerHTML='';
+    CHECKS[g].forEach(function(item,i){
+      totalChecks++;
+      var id=g+'-'+i;
+      if(!(id in checked))checked[id]=false;
+      var row=document.createElement('div');
+      row.className='check-row'+(checked[id]?' checked':'');
+      row.innerHTML='<div class="check-box'+(checked[id]?' checked':'')+'" onclick="toggleCheck(\''+id+'\')"><svg class="check-tick" viewBox="0 0 8 8" fill="none"><path d="M1 4l2.5 2.5L7 1.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="check-label" onclick="toggleCheck(\''+id+'\')">'+item.t+'</div><span class="badge '+item.tagc+'">'+item.tag+'</span>';
+      container.appendChild(row);
+    });
+  });
+  updateProgress();
+}
+
+function toggleCheck(id){
+  checked[id]=!checked[id];
+  buildChecklist();
+}
+
+function updateProgress(){
+  var done=Object.values(checked).filter(function(v){return v;}).length;
+  var pct=Math.round(done/totalChecks*100);
+  document.getElementById('prog-lbl').textContent=done+' / '+totalChecks+' completati';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  var verdict=document.getElementById('checklist-verdict');
+  if(pct===100){verdict.style.color='#22a050';verdict.textContent='Checklist completa. Puoi procedere con il trade. Vai alla tab Entry per il flusso di apertura.';}
+  else if(pct>=75){verdict.style.color='var(--amber)';verdict.textContent='Quasi pronto. Completa i punti mancanti prima di procedere.';}
+  else if(pct>=50){verdict.style.color='var(--txt2)';verdict.textContent='A metà strada. Non aprire il trade ancora — troppi parametri non verificati.';}
+  else{verdict.style.color='var(--txt3)';verdict.textContent='Completa la checklist per ricevere un verdetto.';}
+}
+
+var CASES=[
+  {id:'qqq-2024',label:'QQQ Call — Nov 2024',outcome:'win',content:{context:'Novembre 2024. QQQ quota $480. La Fed aveva appena segnalato pause nei rialzi. Il mercato si aspettava un rally di fine anno.',setup:'Trader compra 5 contratti QQQ call, strike $490 (OTM +2%), scadenza 45 giorni, premio $6.80 → costo totale $3,400.',vix:'VIX a 13.5 — volatilità bassissima. Opzioni economiche. Contesto ideale per compratori.',flow:'Giorno 1: apertura posizione. Giorno 8: QQQ sale a $495. Premio sale a $12.50. Giorno 12: QQQ a $505. Premio a $18.20. Trader chiude metà posizione (+168%). Giorno 25: QQQ a $512. Chiude il resto a $22.40 (+229%).',result:'P&L: +$7,800 su $3,400 investiti (+229%). Durata: 25 giorni su 45 disponibili.',lesson:'Comprare in bassa volatilità (VIX <15) con catalizzatore macro è il setup ideale. Chiusura parziale a +100% ha protetto dal rischio di inversione.',badge:'green'}},
+  {id:'spy-2022',label:'SPY Put — Giu 2022',outcome:'win',content:{context:'Giugno 2022. Mercato bear. Fed in aggressivo ciclo di rialzi. SPY quota $390. Inflazione sopra l\'8%.',setup:'Trader compra 3 contratti SPY put, strike $380 (OTM -2.5%), scadenza 30 giorni, premio $5.20 → costo totale $1,560.',vix:'VIX a 28 — volatilità elevata. Opzioni care. Trader accetta costo maggiore perché il catalizzatore (FOMC) è forte.',flow:'Giorno 1: apertura put. Giorno 3: FOMC alza tassi di 75bps — sorpresa hawkish. SPY crolla a $365. Put vola a $18.50. Trader chiude tutto in giornata.',result:'P&L: +$3,990 su $1,560 investiti (+256%). Durata: 3 giorni.',lesson:'In bear market con catalizzatore noto (FOMC), la put può esplodere in pochissimi giorni. Il VIX alto ha gonfiato il costo ma il movimento è stato così ampio da coprirlo abbondantemente.',badge:'green'}},
+  {id:'qqq-theta',label:'QQQ Call — Theta trap',outcome:'loss',content:{context:'Marzo 2023. QQQ a $310. Trader si aspetta continuazione del rimbalzo dall\'AI boom.',setup:'Trader compra 10 contratti QQQ call, strike $330 (OTM +6.5%), scadenza 14 giorni, premio $1.80 → costo totale $1,800.',vix:'VIX a 19. Nessun catalizzatore specifico nell\'orizzonte temporale.',flow:'QQQ si muove lateralmente per 10 giorni tra $308 e $315. Nessun breakout. Il theta brucia il 70% del valore in 10 giorni. Giorno 13: QQQ a $312. Le call valgono $0.18. Scadono a zero.',result:'P&L: -$1,800 (-100%). Le call OTM non hanno mai raggiunto lo strike.',lesson:'DTE troppo corti (14 giorni) + strike troppo OTM (+6.5%) + nessun catalizzatore = ricetta per perdere tutto. Con opzioni a breve scadenza, hai bisogno di un movimento immediato e grande.',badge:'red'}},
+  {id:'spy-volcrush',label:'SPY Call — Vol crush',outcome:'loss',content:{context:'Ottobre 2023. SPY a $420. Earnings season. Il trader si aspetta un rally post-earnings di grandi tech.',setup:'Compra 4 contratti SPY call, strike $425, scadenza 7 giorni (include la settimana degli earnings). Premio $4.50 → $1,800 totali.',vix:'VIX a 22 pre-earnings — volatilità implicita gonfiata dall\'incertezza.',flow:'Gli earnings sono in linea con le attese. SPY sale da $420 a $424 (+1%). Il VIX crolla da 22 a 15 in un giorno — il "vol crush" post-earnings. Le call perdono il 60% del valore nonostante SPY sia salito.',result:'P&L: -$1,100 (-61%) nonostante il sottostante fosse salito nella direzione giusta.',lesson:'Comprare opzioni PRIMA degli earnings con VIX elevato è pericoloso per i compratori. La IV crolla dopo l\'evento (vol crush) anche se il prezzo va nella direzione giusta.',badge:'red'}}
+];
+
+var currentCase=0;
+
+function buildCases(){
+  var btns=document.getElementById('case-btns');
+  btns.innerHTML='';
+  CASES.forEach(function(c,i){
+    var b=document.createElement('button');
+    b.className='case-btn'+(i===currentCase?' on':'');
+    b.textContent=c.label;
+    b.onclick=(function(idx){return function(){currentCase=idx;buildCases();};})(i);
+    btns.appendChild(b);
+  });
+  renderCase();
+}
+
+function renderCase(){
+  var c=CASES[currentCase];
+  var d=c.content;
+  var isWin=c.outcome==='win';
+  var borderClass=isWin?'card-green':'card-red';
+  document.getElementById('case-content').innerHTML=
+    '<div class="card '+borderClass+'" style="margin-bottom:8px">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+    +'<span class="badge badge-'+d.badge+'">'+(isWin?'WIN':'LOSS')+'</span>'
+    +'<span style="font-size:12px;font-weight:500;color:var(--txt)">'+c.label+'</span>'
+    +'</div>'
+    +'<div class="cbody">'
+    +'<div style="margin-bottom:6px"><span style="color:var(--txt);font-weight:500">Contesto: </span>'+d.context+'</div>'
+    +'<div style="margin-bottom:6px"><span style="color:var(--txt);font-weight:500">Setup: </span>'+d.setup+'</div>'
+    +'<div style="margin-bottom:6px"><span style="color:var(--txt);font-weight:500">VIX: </span>'+d.vix+'</div>'
+    +'<div style="margin-bottom:6px"><span style="color:var(--txt);font-weight:500">Svolgimento: </span>'+d.flow+'</div>'
+    +'</div></div>'
+    +'<div class="card" style="margin-bottom:8px">'
+    +'<div class="ctitle" style="color:'+(isWin?'var(--green)':'var(--red)')+'">Risultato</div>'
+    +'<div class="cbody">'+d.result+'</div>'
+    +'</div>'
+    +'<div class="card card-purple">'
+    +'<div class="ctitle">Lezione chiave</div>'
+    +'<div class="cbody">'+d.lesson+'</div>'
+    +'</div>';
+}
+
+function drawVixChart(){
+  if(vixChartDrawn)return;
+  vixChartDrawn=true;
+  var labels=['VIX<12','12–15','15–20','20–25','25–35','>35'];
+  var buyerScore=[95,85,65,40,20,10];
+  var premiumCost=[10,25,45,60,80,95];
+  new Chart(document.getElementById('vix-chart'),{
+    type:'bar',
+    data:{labels:labels,datasets:[
+      {label:'Vantaggio compratore',data:buyerScore,backgroundColor:'rgba(34,160,80,0.6)',borderRadius:4,borderSkipped:false},
+      {label:'Costo premio (rel.)',data:premiumCost,backgroundColor:'rgba(212,64,64,0.4)',borderRadius:4,borderSkipped:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y+'%';}}}},
+      scales:{
+        x:{ticks:{color:'#5f5e5a',font:{size:9}},grid:{color:'rgba(255,255,255,0.03)'}},
+        y:{max:100,ticks:{color:'#5f5e5a',font:{size:9},callback:function(v){return v+'%';}},grid:{color:'rgba(255,255,255,0.05)'}}
+      }
+    }
+  });
+}
+
+function goTab(n){
+  [0,1,2,3,4].forEach(function(i){
+    document.getElementById('tab'+i).classList.toggle('on',i===n);
+    document.getElementById('p'+i).classList.toggle('on',i===n);
+  });
+  if(n===1)buildChecklist();
+  if(n===3)setTimeout(drawVixChart,60);
+  if(n===4)buildCases();
+}
+
+buildChecklist();
+</script>
+</body>
+</html>
