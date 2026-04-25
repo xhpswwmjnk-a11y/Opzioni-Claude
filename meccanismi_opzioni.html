@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meccanismi delle Opzioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090f;
+  --s1: #0e0e18;
+  --s2: #131320;
+  --s3: #1a1a2c;
+  --s4: #222238;
+  --b1: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.12);
+  --b3: rgba(255,255,255,0.20);
+  --t1: #f0eeff;
+  --t2: #9896b8;
+  --t3: #4e4c6a;
+  --acc: #7c74e0;
+  --acc2: #4e46b4;
+  --G: #22c55e;
+  --R: #ef4444;
+  --A: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--s1);
+  border-right: 1px solid var(--b1);
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  padding: 0 20px 28px;
+  border-bottom: 1px solid var(--b1);
+  margin-bottom: 20px;
+}
+.sidebar-logo .title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--t1);
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.sidebar-logo .sub {
+  font-size: 11px;
+  color: var(--t3);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+  color: var(--t3);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .01em;
+  text-decoration: none;
+}
+.nav-item:hover { color: var(--t2); background: var(--s2); }
+.nav-item.on { color: var(--acc); border-left-color: var(--acc); background: rgba(124,116,224,0.07); font-weight: 500; }
+.nav-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--s3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--t3);
+}
+.nav-item.on .nav-num { background: var(--acc2); color: #fff; }
+.sidebar-footer { margin-top: auto; padding: 20px; border-top: 1px solid var(--b1); }
+.sidebar-footer p { font-size: 11px; color: var(--t3); line-height: 1.6; }
+
+/* ── MAIN ── */
+.main { flex: 1; max-width: 720px; padding: 48px 48px 80px; }
+
+/* ── CHAPTER ── */
+.chapter { display: none; animation: fadeIn .25s ease; }
+.chapter.on { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.ch-header { margin-bottom: 36px; }
+.ch-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--acc);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.ch-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--t1);
+  margin-bottom: 10px;
+}
+.ch-intro { font-size: 15px; color: var(--t2); line-height: 1.75; max-width: 580px; }
+
+/* ── SECTION LABELS ── */
+.slbl {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  color: var(--t3);
+  text-transform: uppercase;
+  margin: 32px 0 12px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.card-acc { border-left: 3px solid var(--acc); border-radius: 0 12px 12px 0; }
+.card-green { border-left: 3px solid var(--G); border-radius: 0 12px 12px 0; }
+.card-red { border-left: 3px solid var(--R); border-radius: 0 12px 12px 0; }
+.card-amber { border-left: 3px solid var(--A); border-radius: 0 12px 12px 0; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--t1); margin-bottom: 6px; }
+.card-body { font-size: 13px; color: var(--t2); line-height: 1.7; }
+
+/* ── METRIC CARDS ── */
+.mc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+.mc-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.mc {
+  background: var(--s3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--b1);
+}
+.mc-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+.mc-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; line-height: 1; }
+.mc-sub { font-size: 11px; color: var(--t2); margin-top: 5px; line-height: 1.5; }
+
+/* ── SLIDERS ── */
+.sim-card {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.srow { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.srow:last-child { margin-bottom: 0; }
+.srow label { font-size: 12px; color: var(--t2); width: 130px; flex-shrink: 0; }
+.srow input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: var(--s4);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.srow input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--acc);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 2px rgba(124,116,224,0.25);
+}
+.srow select {
+  flex: 1;
+  background: var(--s3);
+  color: var(--t1);
+  border: 1px solid var(--b2);
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+.sv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--acc);
+  min-width: 56px;
+  text-align: right;
+}
+
+/* ── CHART ── */
+.cw { position: relative; width: 100%; margin: 16px 0; }
+
+/* ── INSIGHT BOXES ── */
+.insight {
+  background: var(--s3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--t2);
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.insight strong { color: var(--t1); font-weight: 500; }
+.insight-warn {
+  background: rgba(239,68,68,0.07);
+  border: 1px solid rgba(239,68,68,0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #fca5a5;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.insight-ok {
+  background: rgba(34,197,94,0.07);
+  border: 1px solid rgba(34,197,94,0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #86efac;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.insight-warn strong, .insight-ok strong { font-weight: 500; }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 22px; margin: 16px 0; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: var(--b2); }
+.tl { position: relative; padding: 6px 0 14px 12px; }
+.tl::before { content: ''; position: absolute; left: -15px; top: 9px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--s4); background: var(--t3); }
+.tl.ok::before { background: var(--G); border-color: rgba(34,197,94,0.2); }
+.tl.warn::before { background: var(--A); border-color: rgba(245,158,11,0.2); }
+.tl.bad::before { background: var(--R); border-color: rgba(239,68,68,0.2); }
+.tl-title { font-size: 13px; font-weight: 500; color: var(--t1); margin-bottom: 3px; }
+.tl-body { font-size: 12px; color: var(--t2); line-height: 1.65; }
+
+/* ── NEXT BUTTON ── */
+.next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 11px 20px;
+  background: var(--acc2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background .15s;
+}
+.next-btn:hover { background: var(--acc); }
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--t2);
+  border: 1px solid var(--b2);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ghost-btn:hover { background: var(--s3); color: var(--t1); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-right: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .03em;
+}
+.b-purple { background: rgba(124,116,224,0.15); color: #a5b4fc; }
+.b-green { background: rgba(34,197,94,0.12); color: #86efac; }
+.b-red { background: rgba(239,68,68,0.12); color: #fca5a5; }
+.b-amber { background: rgba(245,158,11,0.12); color: #fcd34d; }
+
+/* ── GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+/* ── DIVIDER ── */
+.div { height: 1px; background: var(--b1); margin: 28px 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--s4); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="title">Meccanismi<br>delle Opzioni</div>
+    <div class="sub">Guida interattiva</div>
+  </div>
+
+  <a class="nav-item on" onclick="go(0)" href="#" onclick="return false">
+    <span class="nav-num">1</span>Cos'e un'opzione
+  </a>
+  <a class="nav-item" onclick="go(1)" href="#" onclick="return false">
+    <span class="nav-num">2</span>Il prezzo e il delta
+  </a>
+  <a class="nav-item" onclick="go(2)" href="#" onclick="return false">
+    <span class="nav-num">3</span>Il tempo e il theta
+  </a>
+  <a class="nav-item" onclick="go(3)" href="#" onclick="return false">
+    <span class="nav-num">4</span>La volatilita
+  </a>
+  <a class="nav-item" onclick="go(4)" href="#" onclick="return false">
+    <span class="nav-num">5</span>Il vol crush
+  </a>
+
+  <div class="sidebar-footer">
+    <p>Muovi i cursori per vedere i meccanismi in azione in tempo reale.</p>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ═══════════════════════════════ CHAPTER 0 ═══ -->
+<div class="chapter on" id="c0">
+  <div class="ch-header">
+    <div class="ch-num">Capitolo 01</div>
+    <div class="ch-title">Cos'e un'opzione</div>
+    <div class="ch-intro">Non compri un asset. Compri il diritto di fare qualcosa a un prezzo fisso, entro una data. Quel diritto ha una scadenza — e ogni giorno che passa vale meno, anche se il prezzo non si muove.</div>
+  </div>
+
+  <div class="slbl">L'analogia giusta</div>
+  <div class="card card-acc">
+    <div class="card-title">L'acconto sull'appartamento</div>
+    <div class="card-body">Paghi €8.000 per bloccare il prezzo di un appartamento a €100.000 per 30 giorni. Se l'appartamento sale a €120.000, eserciti il diritto: compri a €100.000, rivendi a €120.000, guadagni €12.000 (al netto dei €8.000 pagati). Se rimane a €95.000, non compri. Perdi solo i €8.000. Non puoi perdere di piu — mai.</div>
+  </div>
+
+  <div class="slbl">I 4 ingredienti di ogni opzione</div>
+  <div class="mc-grid mc-grid-4">
+    <div class="mc">
+      <div class="mc-label">Strike price</div>
+      <div class="mc-value" style="color:var(--acc)">$100</div>
+      <div class="mc-sub">Il prezzo fisso a cui hai il diritto. Non cambia mai dopo l'acquisto.</div>
+    </div>
+    <div class="mc">
+      <div class="mc-label">Scadenza</div>
+      <div class="mc-value" style="color:var(--A)">30gg</div>
+      <div class="mc-sub">Dopo questa data il contratto muore. Vale zero. Non esiste piu.</div>
+    </div>
+    <div class="mc">
+      <div class="mc-label">Premio pagato</div>
+      <div class="mc-value" style="color:var(--G)">$8</div>
+      <div class="mc-sub">Quello che paghi oggi. E la tua perdita massima — non puoi perdere di piu.</div>
+    </div>
+    <div class="mc">
+      <div class="mc-label">Break-even</div>
+      <div class="mc-value">$108</div>
+      <div class="mc-sub">Strike + Premio. Il prezzo che il titolo deve raggiungere perche tu non perda.</div>
+    </div>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="slbl">Call vs Put — la direzione conta tutto</div>
+  <div class="g2">
+    <div class="card card-green" style="margin:0">
+      <div class="card-title"><span class="badge b-green">CALL</span> Scommetti sul rialzo</div>
+      <div class="card-body">Hai il diritto di <em>comprare</em> allo strike. Se il prezzo sale oltre lo strike, guadagni la differenza meno il premio. Se scende, perdi solo il premio.</div>
+    </div>
+    <div class="card card-red" style="margin:0">
+      <div class="card-title"><span class="badge b-red">PUT</span> Scommetti sul ribasso</div>
+      <div class="card-body">Hai il diritto di <em>vendere</em> allo strike. Se il prezzo scende sotto lo strike, guadagni la differenza meno il premio. Se sale, perdi solo il premio.</div>
+    </div>
+  </div>
+
+  <div class="insight" style="margin-top:20px">
+    <strong>Il meccanismo fondamentale:</strong> un'opzione e una scommessa sul tempo. Compri il diritto di fare qualcosa, ma quel diritto ha una scadenza. Ogni giorno che passa il diritto vale meno — anche se il prezzo del titolo non si muove. Questo e il punto che la maggior parte dei principianti non capisce finche non lo vede accadere al proprio conto.
+  </div>
+
+  <div class="btn-row">
+    <button class="next-btn" onclick="go(1)">Capitolo 2: il delta &rarr;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CHAPTER 1 ═══ -->
+<div class="chapter" id="c1">
+  <div class="ch-header">
+    <div class="ch-num">Capitolo 02</div>
+    <div class="ch-title">Il prezzo e il delta</div>
+    <div class="ch-intro">Il delta non e un concetto astratto. E letteralmente quanto guadagna la tua opzione se il sottostante si muove di $1. Delta 0.30 significa: se il titolo sale di $1, l'opzione vale $0.30 in piu. Non $1. Non $0.10. Esattamente $0.30.</div>
+  </div>
+
+  <div class="slbl">Simulatore live</div>
+  <div class="sim-card">
+    <div class="srow"><label>Prezzo sottostante</label><input type="range" id="d-spot" min="75" max="135" step="1" value="100" oninput="calcD()"><span class="sv" id="dv-spot">$100</span></div>
+    <div class="srow"><label>Strike price</label><input type="range" id="d-k" min="75" max="135" step="1" value="100" oninput="calcD()"><span class="sv" id="dv-k">$100</span></div>
+    <div class="srow"><label>Giorni alla scadenza</label><input type="range" id="d-dte" min="1" max="90" step="1" value="30" oninput="calcD()"><span class="sv" id="dv-dte">30gg</span></div>
+    <div class="srow"><label>Volatilita IV</label><input type="range" id="d-iv" min="10" max="80" step="5" value="25" oninput="calcD()"><span class="sv" id="dv-iv">25%</span></div>
+  </div>
+
+  <div class="mc-grid mc-grid-4">
+    <div class="mc"><div class="mc-label">Delta</div><div class="mc-value" id="dv-delta" style="color:var(--acc)">—</div><div class="mc-sub">Guadagno per ogni $1 di rialzo</div></div>
+    <div class="mc"><div class="mc-label">Moneyness</div><div class="mc-value" id="dv-money">—</div><div class="mc-sub" id="dv-msub">—</div></div>
+    <div class="mc"><div class="mc-label">Valore call</div><div class="mc-value" id="dv-price" style="color:var(--G)">—</div><div class="mc-sub">Premio attuale</div></div>
+    <div class="mc"><div class="mc-label">Break-even</div><div class="mc-value" id="dv-be">—</div><div class="mc-sub">Prezzo minimo per guadagnare</div></div>
+  </div>
+
+  <div class="cw" style="height:200px">
+    <canvas id="chart-d" role="img" aria-label="Curva delta al variare del prezzo sottostante">Curva del delta: aumenta avvicinandosi allo strike e superandolo.</canvas>
+  </div>
+
+  <div class="insight" id="d-insight">Sposta i cursori per vedere come cambia il delta.</div>
+
+  <div class="div"></div>
+
+  <div class="slbl">Le tre zone — moneyness</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+    <div class="mc">
+      <div class="mc-label"><span class="badge b-green">ITM</span> In the money</div>
+      <div class="mc-value" style="color:var(--G);font-size:18px">0.6 – 1.0</div>
+      <div class="mc-sub">Il prezzo supera lo strike. Valore intrinseco reale. Si comporta quasi come un'azione.</div>
+    </div>
+    <div class="mc">
+      <div class="mc-label"><span class="badge b-amber">ATM</span> At the money</div>
+      <div class="mc-value" style="color:var(--A);font-size:18px">~0.50</div>
+      <div class="mc-sub">Al livello dello strike. Massima sensibilita ai movimenti. Il punto piu "vivo".</div>
+    </div>
+    <div class="mc">
+      <div class="mc-label"><span class="badge b-red">OTM</span> Out of the money</div>
+      <div class="mc-value" style="color:var(--R);font-size:18px">0.05 – 0.35</div>
+      <div class="mc-sub">Sotto lo strike. Solo speranza, nessun valore reale. Il 55% delle OTM scade a zero.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="next-btn" onclick="go(2)">Capitolo 3: il theta &rarr;</button>
+    <button class="ghost-btn" onclick="go(0)">&larr; Indietro</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CHAPTER 2 ═══ -->
+<div class="chapter" id="c2">
+  <div class="ch-header">
+    <div class="ch-num">Capitolo 03</div>
+    <div class="ch-title">Il tempo e il theta</div>
+    <div class="ch-intro">Anche se il titolo non si muove di un centesimo, la tua opzione perde valore ogni giorno. Il theta misura quanto. La curva non e lineare — accelera come una palla che rotola verso il bordo di un tavolo. Le ultime due settimane sono devastanti.</div>
+  </div>
+
+  <div class="slbl">Simulatore decay</div>
+  <div class="sim-card">
+    <div class="srow"><label>Premio iniziale</label><input type="range" id="t-prem" min="2" max="30" step="1" value="10" oninput="calcT()"><span class="sv" id="tv-prem">$10</span></div>
+    <div class="srow">
+      <label>Moneyness</label>
+      <select id="t-mono" onchange="calcT()">
+        <option value="atm">ATM — decadimento piu rapido</option>
+        <option value="otm">OTM — inizialmente lento, poi brutale</option>
+        <option value="itm">ITM — decadimento moderato</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="mc-grid">
+    <div class="mc"><div class="mc-label">Valore a 7 giorni</div><div class="mc-value" id="tv-7" style="color:var(--R)">—</div><div class="mc-sub">Quanto vale ancora nell'ultima settimana</div></div>
+    <div class="mc"><div class="mc-label">Theta giornaliero (7 DTE)</div><div class="mc-value" id="tv-th" style="color:var(--A)">—</div><div class="mc-sub">Perso ogni giorno nell'ultima settimana</div></div>
+  </div>
+
+  <div class="cw" style="height:200px">
+    <canvas id="chart-t" role="img" aria-label="Theta decay nei 30 giorni prima della scadenza">Theta decay: il valore temporale erode progressivamente fino a zero.</canvas>
+  </div>
+
+  <div class="insight" id="t-insight">—</div>
+
+  <div class="div"></div>
+  <div class="slbl">Le zone temporali — regola d'oro per i compratori</div>
+  <div class="timeline">
+    <div class="tl ok">
+      <div class="tl-title">30–45 DTE — zona ideale</div>
+      <div class="tl-body">Il decadimento e lento. Hai tempo per aspettare il movimento. Se hai ragione sulla direzione, il theta non ti distrugge. Apri le posizioni qui.</div>
+    </div>
+    <div class="tl warn">
+      <div class="tl-title">14–21 DTE — attenzione</div>
+      <div class="tl-body">Il decadimento accelera. Se non sei gia in profitto, ogni giorno che passa diventa piu costoso. Valuta di chiudere o di uscire.</div>
+    </div>
+    <div class="tl bad">
+      <div class="tl-title">7 DTE — zona pericolosa</div>
+      <div class="tl-body">Il theta brucia valore ogni ora. Le opzioni OTM con meno di 7 giorni sono quasi sempre un regalo al venditore. Non comprarle mai come principiante.</div>
+    </div>
+    <div class="tl bad">
+      <div class="tl-title">Scadenza — azzeramento</div>
+      <div class="tl-body">Il valore temporale e zero. Rimane solo il valore intrinseco se sei ITM — altrimenti nulla. Il contratto non esiste piu.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="next-btn" onclick="go(3)">Capitolo 4: la volatilita &rarr;</button>
+    <button class="ghost-btn" onclick="go(1)">&larr; Indietro</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CHAPTER 3 ═══ -->
+<div class="chapter" id="c3">
+  <div class="ch-header">
+    <div class="ch-num">Capitolo 04</div>
+    <div class="ch-title">La volatilita implicita</div>
+    <div class="ch-intro">La volatilita implicita (IV) e quanto il mercato si aspetta che il titolo si muova in futuro. Alta IV significa opzioni care. Bassa IV significa opzioni economiche. E il termometro della paura — e il VIX ne e l'indice per l'S&amp;P500.</div>
+  </div>
+
+  <div class="slbl">Simulatore impatto IV sul premio</div>
+  <div class="sim-card">
+    <div class="srow"><label>Prezzo spot</label><input type="range" id="i-s" min="80" max="130" step="1" value="100" oninput="calcI()"><span class="sv" id="iv-s">$100</span></div>
+    <div class="srow"><label>Strike</label><input type="range" id="i-k" min="80" max="130" step="1" value="102" oninput="calcI()"><span class="sv" id="iv-k">$102</span></div>
+    <div class="srow"><label>DTE</label><input type="range" id="i-d" min="7" max="90" step="7" value="30" oninput="calcI()"><span class="sv" id="iv-d">30gg</span></div>
+    <div class="srow"><label>Volatilita IV %</label><input type="range" id="i-v" min="5" max="80" step="5" value="25" oninput="calcI()"><span class="sv" id="iv-v">25%</span></div>
+  </div>
+
+  <div class="mc-grid">
+    <div class="mc"><div class="mc-label">Premio call</div><div class="mc-value" id="iv-prem" style="color:var(--acc)">—</div><div class="mc-sub">Costo dell'opzione a questa IV</div></div>
+    <div class="mc"><div class="mc-label">Vega</div><div class="mc-value" id="iv-vega" style="color:var(--A)">—</div><div class="mc-sub">Guadagno/perdita per ogni +1% di IV</div></div>
+  </div>
+
+  <div class="cw" style="height:200px">
+    <canvas id="chart-i" role="img" aria-label="Premio call al variare della volatilita implicita">Premio dell'opzione al variare dell'IV.</canvas>
+  </div>
+
+  <div class="insight" id="i-insight">—</div>
+
+  <div class="div"></div>
+  <div class="slbl">Cosa fare con il VIX</div>
+  <div class="timeline">
+    <div class="tl ok">
+      <div class="tl-title">VIX sotto 15 — opzioni economiche</div>
+      <div class="tl-body">Il mercato sottostima la volatilita futura. E il momento migliore per comprare call o put. I premi sono bassi, il potenziale e alto.</div>
+    </div>
+    <div class="tl warn">
+      <div class="tl-title">VIX 15–25 — zona neutra</div>
+      <div class="tl-body">Premi nella norma. Puoi operare, ma verifica l'IV Rank del titolo specifico — non basta guardare il VIX generico.</div>
+    </div>
+    <div class="tl bad">
+      <div class="tl-title">VIX sopra 30 — opzioni care</div>
+      <div class="tl-body">Le opzioni costano molto. Se la volatilita scende dopo l'acquisto, perdi valore anche se il prezzo va nella direzione giusta. Attenzione.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="next-btn" onclick="go(4)">Capitolo 5: il vol crush &rarr;</button>
+    <button class="ghost-btn" onclick="go(2)">&larr; Indietro</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CHAPTER 4 ═══ -->
+<div class="chapter" id="c4">
+  <div class="ch-header">
+    <div class="ch-num">Capitolo 05</div>
+    <div class="ch-title">La trappola del vol crush</div>
+    <div class="ch-intro">Compri una call. Il titolo sale del 3%. L'opzione perde valore. Com'e possibile? Mentre il titolo saliva, la volatilita implicita e crollata e il theta continuava a bruciare. Il guadagno dal delta e stato divorato dalla perdita di vega e theta. Questo ha un nome: vol crush.</div>
+  </div>
+
+  <div class="slbl">Simulatore vol crush — sperimenta direttamente</div>
+  <div class="sim-card">
+    <div class="srow"><label>Prezzo prima</label><input type="range" id="vc-s0" min="80" max="130" step="1" value="100" oninput="calcVC()"><span class="sv" id="vcv-s0">$100</span></div>
+    <div class="srow"><label>Prezzo dopo</label><input type="range" id="vc-s1" min="80" max="140" step="1" value="103" oninput="calcVC()"><span class="sv" id="vcv-s1">$103</span></div>
+    <div class="srow"><label>IV prima %</label><input type="range" id="vc-v0" min="10" max="80" step="5" value="35" oninput="calcVC()"><span class="sv" id="vcv-v0">35%</span></div>
+    <div class="srow"><label>IV dopo %</label><input type="range" id="vc-v1" min="5" max="80" step="5" value="15" oninput="calcVC()"><span class="sv" id="vcv-v1">15%</span></div>
+    <div class="srow"><label>Strike</label><input type="range" id="vc-k" min="90" max="120" step="1" value="102" oninput="calcVC()"><span class="sv" id="vcv-k">$102</span></div>
+    <div class="srow"><label>DTE prima</label><input type="range" id="vc-t" min="7" max="60" step="7" value="21" oninput="calcVC()"><span class="sv" id="vcv-t">21gg</span></div>
+  </div>
+
+  <div class="mc-grid mc-grid-4">
+    <div class="mc"><div class="mc-label">Premio prima</div><div class="mc-value" id="vcv-p0">—</div><div class="mc-sub">Al momento dell'acquisto</div></div>
+    <div class="mc"><div class="mc-label">Premio dopo</div><div class="mc-value" id="vcv-p1">—</div><div class="mc-sub">Dopo il movimento</div></div>
+    <div class="mc"><div class="mc-label">Titolo mosso</div><div class="mc-value" id="vcv-pm">—</div><div class="mc-sub">Variazione del sottostante</div></div>
+    <div class="mc"><div class="mc-label">P&amp;L opzione</div><div class="mc-value" id="vcv-pnl">—</div><div class="mc-sub">Risultato finale</div></div>
+  </div>
+
+  <div id="vc-insight" class="insight-warn">—</div>
+
+  <div class="div"></div>
+  <div class="slbl">Il caso reale — SPY earnings ottobre 2023</div>
+  <div class="timeline">
+    <div class="tl warn">
+      <div class="tl-title">Prima degli earnings</div>
+      <div class="tl-body">SPY a $420. IV al 22% — gonfiata dall'incertezza degli earnings. Costo di una call ATM a 7 giorni: $4.50 per contratto.</div>
+    </div>
+    <div class="tl warn">
+      <div class="tl-title">Earnings pubblicati</div>
+      <div class="tl-body">Risultati in linea con le attese. Nessuna sorpresa. SPY sale a $424 (+1%). Sembra un successo — hai scommesso rialzista e il titolo e salito.</div>
+    </div>
+    <div class="tl bad">
+      <div class="tl-title">Il vol crush colpisce</div>
+      <div class="tl-body">La IV crolla da 22% a 15% in poche ore — il mercato non ha piu incertezza. Le call perdono il 60% del valore nonostante SPY sia salito. P&amp;L finale: -$1.100 su $1.800 investiti.</div>
+    </div>
+    <div class="tl ok">
+      <div class="tl-title">La lezione operativa</div>
+      <div class="tl-body">Non comprare opzioni subito prima degli earnings con IV alta. Aspetta che la IV crolli dopo l'evento, poi posizionati se vuoi cavalcare il trend successivo.</div>
+    </div>
+  </div>
+
+  <div class="div"></div>
+  <div class="slbl">Le tre forze che agiscono simultaneamente</div>
+  <div class="g2">
+    <div class="card card-acc" style="margin:0">
+      <div class="card-title">Delta (positivo)</div>
+      <div class="card-body">Il titolo sale — e questa forza lavora a tuo favore. Ma da sola non basta se le altre due forze sono piu potenti.</div>
+    </div>
+    <div class="card card-red" style="margin:0">
+      <div class="card-title">Theta (negativo)</div>
+      <div class="card-body">Ogni giorno erode il valore temporale. Con 7 DTE brucia decine di dollari per contratto ogni ora di mercato aperto.</div>
+    </div>
+  </div>
+  <div class="card card-amber" style="margin-top:10px">
+    <div class="card-title">Vol crush — vega (negativo)</div>
+    <div class="card-body">Quando la IV scende, anche le opzioni call perdono valore. Un calo dal 35% al 15% di IV puo azzerare completamente il guadagno del delta. E il meccanismo meno intuitivo — e il piu pericoloso per chi non lo conosce.</div>
+  </div>
+
+  <div class="insight-ok" style="margin-top:20px">
+    <strong>La domanda da farsi sempre prima di comprare:</strong> "Se il titolo si muove nella mia direzione ma la IV scende del 30%, guadagno ancora?" Se la risposta non e chiara, non aprire la posizione.
+  </div>
+
+  <div class="btn-row" style="margin-top:28px">
+    <button class="ghost-btn" onclick="go(3)">&larr; Indietro</button>
+    <button class="next-btn" onclick="go(0)">Ricomincia dall'inizio &rarr;</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var charts = {};
+
+function go(n) {
+  document.querySelectorAll('.chapter').forEach(function(c, i) { c.classList.toggle('on', i === n); });
+  document.querySelectorAll('.nav-item').forEach(function(b, i) { b.classList.toggle('on', i === n); });
+  var fns = [null, calcD, calcT, calcI, calcVC];
+  if (fns[n]) setTimeout(fns[n], 60);
+}
+
+function Phi(x) {
+  var a = [.254829592, -.284496736, 1.421413741, -1.453152027, 1.061405429], p = .3275911, s = x < 0 ? -1 : 1;
+  x = Math.abs(x) / Math.SQRT2;
+  var t = 1 / (1 + p * x), y = 1 - (((((a[4]*t+a[3])*t+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));
+  return .5 * (1 + s * y);
+}
+
+function bsC(S, K, T, r, v) {
+  if (T <= 0 || v <= 0) return Math.max(0, S - K);
+  var d1 = (Math.log(S/K) + (r + .5*v*v)*T) / (v*Math.sqrt(T));
+  return Math.max(0, S*Phi(d1) - K*Math.exp(-r*T)*Phi(d1 - v*Math.sqrt(T)));
+}
+function bsDel(S, K, T, r, v) {
+  if (T <= 0 || v <= 0) return S > K ? 1 : 0;
+  var d1 = (Math.log(S/K) + (r + .5*v*v)*T) / (v*Math.sqrt(T));
+  return Phi(d1);
+}
+function bsVg(S, K, T, r, v) {
+  if (T <= 0 || v <= 0) return 0;
+  var d1 = (Math.log(S/K) + (r + .5*v*v)*T) / (v*Math.sqrt(T));
+  return S * Math.exp(-d1*d1/2) * Math.sqrt(T) / (100 * Math.sqrt(2*Math.PI));
+}
+function G(id) { return +document.getElementById(id).value; }
+
+var gc = 'rgba(255,255,255,0.05)', tc = 'rgba(255,255,255,0.25)';
+
+function calcD() {
+  var S=G('d-spot'), K=G('d-k'), T=G('d-dte')/365, iv=G('d-iv')/100, r=.05;
+  document.getElementById('dv-spot').textContent = '$'+S;
+  document.getElementById('dv-k').textContent = '$'+K;
+  document.getElementById('dv-dte').textContent = G('d-dte')+'gg';
+  document.getElementById('dv-iv').textContent = G('d-iv')+'%';
+  var d = bsDel(S,K,T,r,iv), p = bsC(S,K,T,r,iv), be = K + p;
+  document.getElementById('dv-delta').textContent = d.toFixed(3);
+  document.getElementById('dv-price').textContent = '$'+p.toFixed(2);
+  document.getElementById('dv-be').textContent = '$'+be.toFixed(2);
+  var money = S > K*1.02 ? 'ITM' : S < K*0.98 ? 'OTM' : 'ATM';
+  var mC = {ITM:'#86efac', ATM:'#fcd34d', OTM:'#fca5a5'};
+  var mS = {ITM:'Il titolo supera lo strike — valore intrinseco reale', ATM:'Al livello dello strike — massima sensibilita', OTM:'Sotto lo strike — solo valore temporale, nessun intrinseco'};
+  document.getElementById('dv-money').textContent = money;
+  document.getElementById('dv-money').style.color = mC[money];
+  document.getElementById('dv-msub').textContent = mS[money];
+  document.getElementById('d-insight').innerHTML = '<strong>Concreto:</strong> con delta ' + d.toFixed(2) + ', se il titolo sale di $1 guadagni $' + d.toFixed(2) + '. Se sale di $10 guadagni $' + (d*10).toFixed(2) + '. Il break-even e $' + be.toFixed(2) + ' — il titolo deve arrivare li perche tu non perda nulla.';
+  var px = [], dl = [];
+  for (var i = 70; i <= 140; i += 1) { px.push(i); dl.push(parseFloat(bsDel(i,K,T,r,iv).toFixed(4))); }
+  if (charts.d) charts.d.destroy();
+  charts.d = new Chart(document.getElementById('chart-d'), {
+    type: 'line',
+    data: { labels: px.map(function(p){return '$'+p;}), datasets: [
+      {label:'Delta',data:dl,borderColor:'#7c74e0',borderWidth:2,pointRadius:0,tension:.4,fill:false},
+      {label:'Posizione',data:px.map(function(p){return p===S?bsDel(p,K,T,r,iv):null;}),borderColor:'#22c55e',borderWidth:0,pointRadius:9,pointBackgroundColor:'#22c55e',showLine:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'Delta: '+c.parsed.y.toFixed(3);}}}},
+      scales:{x:{ticks:{color:tc,font:{size:9},maxTicksLimit:10},grid:{color:gc},border:{color:gc}},y:{min:0,max:1,ticks:{color:tc,font:{size:9}},grid:{color:gc},border:{color:gc}}}}
+  });
+}
+
+var tChart = null;
+function calcT() {
+  var prem = G('t-prem'), mono = document.getElementById('t-mono').value;
+  document.getElementById('tv-prem').textContent = '$'+prem;
+  var vals = [];
+  for (var d = 30; d >= 0; d--) {
+    var t = d/30, v;
+    if (mono==='atm') v = prem * Math.pow(t,.5);
+    else if (mono==='otm') v = prem * Math.pow(t,.35);
+    else v = prem * (.35 + .65*Math.pow(t,.6));
+    vals.push(parseFloat(Math.max(0,v).toFixed(3)));
+  }
+  var v7 = vals[23], th = parseFloat((vals[22]-vals[23]).toFixed(3));
+  document.getElementById('tv-7').textContent = '$'+v7.toFixed(2);
+  document.getElementById('tv-th').textContent = '-$'+th.toFixed(2)+'/gg';
+  var ins = {
+    atm: 'Un\'opzione ATM perde valore rapidamente nelle ultime due settimane. A 7 giorni vale solo $'+v7.toFixed(2)+' su $'+prem+' iniziali. Il theta brucia $'+th.toFixed(2)+' al giorno nell\'ultima settimana.',
+    otm: 'Un\'opzione OTM ha un decadimento inizialmente lento poi brutale. A 7 giorni vale solo $'+v7.toFixed(2)+'. Sembra che costi poco, ma quasi sempre scade a zero perche non c\'e abbastanza tempo per un movimento sufficiente.',
+    itm: 'Un\'opzione ITM ha anche valore intrinseco, quindi non va mai a zero prima della scadenza. Il theta erode solo il valore temporale. A 7 giorni vale ancora $'+v7.toFixed(2)+'.'
+  };
+  document.getElementById('t-insight').textContent = ins[mono];
+  var days = Array.from({length:31}, function(_,i){return 30-i;});
+  if (tChart) tChart.destroy();
+  tChart = new Chart(document.getElementById('chart-t'), {
+    type:'line',
+    data:{labels:days, datasets:[
+      {label:'Residuo',data:vals,borderColor:'#7c74e0',backgroundColor:'rgba(124,116,224,0.08)',fill:true,borderWidth:2,pointRadius:0,tension:.4},
+      {label:'Perso',data:vals.map(function(v){return parseFloat((prem-v).toFixed(3));}),borderColor:'#ef4444',borderDash:[5,4],borderWidth:1.5,pointRadius:0,tension:.4,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:function(c){return'Giorni alla scadenza: '+c[0].label;},label:function(c){return c.dataset.label+': $'+c.parsed.y.toFixed(2);}}}},
+      scales:{x:{ticks:{color:tc,font:{size:9},maxTicksLimit:7},grid:{color:gc},border:{color:gc},title:{display:true,text:'Giorni alla scadenza',color:tc,font:{size:9}}},y:{min:0,ticks:{color:tc,font:{size:9},callback:function(v){return'$'+v;}},grid:{color:gc},border:{color:gc}}}}
+  });
+}
+
+var iChart = null;
+function calcI() {
+  var S=G('i-s'), K=G('i-k'), T=G('i-d')/365, iv=G('i-v')/100, r=.05;
+  document.getElementById('iv-s').textContent = '$'+S;
+  document.getElementById('iv-k').textContent = '$'+K;
+  document.getElementById('iv-d').textContent = G('i-d')+'gg';
+  document.getElementById('iv-v').textContent = G('i-v')+'%';
+  var p = bsC(S,K,T,r,iv), vg = bsVg(S,K,T,r,iv);
+  document.getElementById('iv-prem').textContent = '$'+p.toFixed(2);
+  document.getElementById('iv-vega').textContent = '$'+vg.toFixed(3);
+  document.getElementById('i-insight').textContent = 'Con IV al '+G('i-v')+'%, il premio e $'+p.toFixed(2)+'. Se la IV sale di 1 punto percentuale guadagni $'+vg.toFixed(3)+' per contratto. Se la IV scende di 10 punti (tipico post-earnings), perdi circa $'+(vg*10).toFixed(2)+' per contratto — anche se il titolo va nella direzione giusta.';
+  var ivs = [], prems = [];
+  for (var i = 5; i <= 80; i += 5) { ivs.push(i); prems.push(parseFloat(bsC(S,K,T,r,i/100).toFixed(3))); }
+  if (iChart) iChart.destroy();
+  iChart = new Chart(document.getElementById('chart-i'), {
+    type:'line',
+    data:{labels:ivs.map(function(i){return i+'%';}), datasets:[
+      {label:'Premio',data:prems,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.07)',fill:true,borderWidth:2,pointRadius:0,tension:.4},
+      {label:'Attuale',data:ivs.map(function(i){return i===G('i-v')?bsC(S,K,T,r,i/100):null;}),borderColor:'#7c74e0',borderWidth:0,pointRadius:9,pointBackgroundColor:'#7c74e0',showLine:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'Premio: $'+c.parsed.y.toFixed(2);}}}},
+      scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc},border:{color:gc}},y:{ticks:{color:tc,font:{size:9},callback:function(v){return'$'+v;}},grid:{color:gc},border:{color:gc}}}}
+  });
+}
+
+function calcVC() {
+  var S0=G('vc-s0'), S1=G('vc-s1'), v0=G('vc-v0')/100, v1=G('vc-v1')/100, K=G('vc-k'), T0=G('vc-t')/365, T1=Math.max(.002,T0-1/365), r=.05;
+  document.getElementById('vcv-s0').textContent='$'+S0;
+  document.getElementById('vcv-s1').textContent='$'+S1;
+  document.getElementById('vcv-v0').textContent=G('vc-v0')+'%';
+  document.getElementById('vcv-v1').textContent=G('vc-v1')+'%';
+  document.getElementById('vcv-k').textContent='$'+K;
+  document.getElementById('vcv-t').textContent=G('vc-t')+'gg';
+  var p0=bsC(S0,K,T0,r,v0), p1=bsC(S1,K,T1,r,v1), pnl=p1-p0, mov=S1-S0;
+  document.getElementById('vcv-p0').textContent='$'+p0.toFixed(2);
+  document.getElementById('vcv-p1').textContent='$'+p1.toFixed(2);
+  document.getElementById('vcv-pm').textContent=(mov>=0?'+':'')+'$'+mov.toFixed(1);
+  document.getElementById('vcv-pnl').textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
+  document.getElementById('vcv-pnl').style.color=pnl>=0?'#86efac':'#fca5a5';
+  var ins=document.getElementById('vc-insight');
+  if(pnl<0&&mov>0){
+    ins.className='insight-warn';
+    ins.textContent='Vol crush in azione: il titolo e salito di $'+mov.toFixed(1)+' (+'+((mov/S0)*100).toFixed(1)+'%) ma l\'opzione ha perso $'+Math.abs(pnl).toFixed(2)+'. La IV e crollata dal '+G('vc-v0')+'% al '+G('vc-v1')+'% — la perdita di valore dalla compressione della IV e stata piu forte del guadagno dal delta.';
+  } else if(pnl>=0&&mov>0){
+    ins.className='insight-ok';
+    ins.textContent='In questo scenario il delta ha vinto: +$'+pnl.toFixed(2)+'. Il guadagno dal movimento del prezzo ($'+mov.toFixed(1)+') ha superato la perdita dalla compressione della IV. Ma nota quanto la IV riduce il guadagno rispetto a un movimento puro senza vol crush.';
+  } else {
+    ins.className='insight-warn';
+    ins.textContent='Doppia perdita: il titolo e sceso E la IV si e compressa. L\'opzione vale $'+Math.abs(pnl).toFixed(2)+' in meno. Delta negativo + theta + vol crush = la trappola piu costosa per i principianti.';
+  }
+}
+
+calcD();
+</script>
+</body>
+</html>
